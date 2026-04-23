@@ -9,6 +9,14 @@ const USER_ROLES = [
   "EXTERNAL_PARTICIPANT",
 ];
 
+function normalizeRole(value) {
+  if (typeof value !== "string") {
+    return value;
+  }
+
+  return value.trim().replace(/[\s-]+/g, "_").toUpperCase();
+}
+
 const userSchema = new mongoose.Schema(
   {
     userID: {
@@ -38,8 +46,8 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       enum: USER_ROLES,
-      uppercase: true,
       trim: true,
+      set: normalizeRole,
     },
     mobileNumber: {
       type: String,

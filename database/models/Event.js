@@ -10,6 +10,14 @@ const EVENT_STATUS = [
   "ARCHIVED",
 ];
 
+function normalizeEnumValue(value) {
+  if (typeof value !== "string") {
+    return value;
+  }
+
+  return value.trim().replace(/[\s-]+/g, "_").toUpperCase();
+}
+
 const eventSchema = new mongoose.Schema(
   {
     eventID: {
@@ -62,15 +70,15 @@ const eventSchema = new mongoose.Schema(
       type: String,
       required: true,
       enum: EVENT_VISIBILITY,
-      uppercase: true,
       trim: true,
+      set: normalizeEnumValue,
     },
     status: {
       type: String,
       required: true,
       enum: EVENT_STATUS,
-      uppercase: true,
       trim: true,
+      set: normalizeEnumValue,
     },
     posterURL: {
       type: String,

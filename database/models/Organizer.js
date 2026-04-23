@@ -1,6 +1,21 @@
 const { mongoose } = require("../config/db");
 const Counter = require("./Counter");
 
+const ORGANIZATION_TYPES = [
+  "COLLEGE",
+  "DEPARTMENT",
+  "STUDENT_CLUB",
+  "ADMINISTRATIVE_UNIT",
+];
+
+function normalizeOrganizationType(value) {
+  if (typeof value !== "string") {
+    return value;
+  }
+
+  return value.trim().replace(/[\s-]+/g, "_").toUpperCase();
+}
+
 const organizerSchema = new mongoose.Schema(
   {
     organizerID: {
@@ -25,6 +40,8 @@ const organizerSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+      enum: ORGANIZATION_TYPES,
+      set: normalizeOrganizationType,
     },
     description: {
       type: String,

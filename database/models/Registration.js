@@ -3,6 +3,14 @@ const Counter = require("./Counter");
 
 const REGISTRATION_STATUS = ["REGISTERED", "CANCELLED"];
 
+function normalizeRegistrationStatus(value) {
+  if (typeof value !== "string") {
+    return value;
+  }
+
+  return value.trim().replace(/[\s-]+/g, "_").toUpperCase();
+}
+
 const registrationSchema = new mongoose.Schema(
   {
     registrationID: {
@@ -32,9 +40,9 @@ const registrationSchema = new mongoose.Schema(
       type: String,
       required: true,
       enum: REGISTRATION_STATUS,
-      uppercase: true,
       trim: true,
       default: "REGISTERED",
+      set: normalizeRegistrationStatus,
     },
     bookingReference: {
       type: String,
