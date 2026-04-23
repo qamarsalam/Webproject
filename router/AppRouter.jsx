@@ -9,6 +9,7 @@ import ContactUs from "../pages/ContactUs";
 import OrganizerRequest from "../pages/OrganizerRequest";
 import Register from "../pages/Register";
 import CreateEvent from "../pages/CreateEvent";
+import Admin from "../pages/Admin";
 
 function AppRouter() {
   return (
@@ -24,6 +25,7 @@ function AppRouter() {
           <Route path="/create-event" element={<CreateEvent />} />
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/organizer-request" element={<OrganizerRequest />} />
+          <Route path="/admin" element={<Admin />} />
         </Routes>
       </main>
       <Footer />

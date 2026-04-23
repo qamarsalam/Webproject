@@ -133,16 +133,6 @@ function Register() {
                   />
                   <span>🎓 Student</span>
                 </label>
-                <label className={`role-option ${formData.role === "organizer" ? "active" : ""}`}>
-                  <input
-                    type="radio"
-                    name="role"
-                    value="organizer"
-                    checked={formData.role === "organizer"}
-                    onChange={handleChange}
-                  />
-                  <span>🎤 Organizer</span>
-                </label>
                 <label className={`role-option ${formData.role === "external" ? "active" : ""}`}>
                   <input
                     type="radio"
@@ -254,6 +244,12 @@ function Register() {
               Already have an account?{" "}
               <Link to="/login" className="auth-link">
                 Sign in
+              </Link>
+            </p>
+            <p>
+              Want to organize events?{" "}
+              <Link to="/organizer-request" className="auth-link">
+                Register as Event Organizer
               </Link>
             </p>
             <Link to="/" className="back-link">
