@@ -1,0 +1,220 @@
+.app-page-shell {
+    background:
+        radial-gradient(circle at top left, rgba(251, 191, 36, 0.16), transparent 26%),
+        linear-gradient(180deg, #f8fbff 0%, var(--light-white) 44%, #eef3ff 100%);
+}
+
+.app-page-hero {
+    position: relative;
+    overflow: hidden;
+    padding: 88px 0 58px;
+}
+
+.app-page-hero::before,
+.app-page-hero::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.app-page-hero::before {
+    width: 340px;
+    height: 340px;
+    top: -130px;
+    right: -70px;
+    background: rgba(251, 191, 36, 0.12);
+}
+
+.app-page-hero::after {
+    width: 240px;
+    height: 240px;
+    left: -60px;
+    bottom: -100px;
+    background: rgba(30, 58, 138, 0.08);
+}
+
+.app-page-hero-grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+    gap: 32px;
+    align-items: start;
+}
+
+.app-page-copy {
+    padding-top: 12px;
+}
+
+.app-page-title {
+    margin-top: 18px;
+    font-size: clamp(36px, 5vw, 58px);
+    line-height: 1.08;
+    color: var(--primary-blue);
+    letter-spacing: -0.9px;
+}
+
+.app-page-text {
+    margin-top: 18px;
+    max-width: 640px;
+    font-size: 18px;
+    line-height: 1.75;
+    color: #4b5563;
+}
+
+.app-page-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 28px;
+}
+
+.app-page-stat-card {
+    min-width: 150px;
+    background: rgba(255, 255, 255, 0.82);
+    border: 1px solid rgba(30, 58, 138, 0.12);
+    border-radius: 18px;
+    padding: 18px 20px;
+    box-shadow: 0 14px 32px rgba(30, 58, 138, 0.08);
+}
+
+.app-page-stat-card strong {
+    display: block;
+    color: var(--primary-blue);
+    font-size: 28px;
+    margin-bottom: 6px;
+    text-transform: capitalize;
+}
+
+.app-page-stat-card span {
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.app-page-panel {
+    background: rgba(255, 255, 255, 0.96);
+    border: 1px solid rgba(30, 58, 138, 0.12);
+    border-radius: 28px;
+    padding: 32px;
+    box-shadow: 0 24px 60px rgba(30, 58, 138, 0.14);
+}
+
+.app-page-panel-header h2 {
+    font-size: 30px;
+    color: var(--primary-blue);
+    margin-bottom: 10px;
+    letter-spacing: -0.5px;
+}
+
+.app-page-panel-header p {
+    color: #6b7280;
+    line-height: 1.65;
+    margin-bottom: 24px;
+}
+
+.app-page-panel-kicker {
+    display: inline-block;
+    margin-bottom: 12px;
+    color: #b45309;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1.8px;
+    font-weight: 700;
+}
+
+.app-page-content-section {
+    padding: 0 0 88px;
+}
+
+.app-empty-state,
+.app-detail-card {
+    border-radius: 24px;
+    border: 1px solid rgba(30, 58, 138, 0.08);
+    box-shadow: 0 18px 44px rgba(30, 58, 138, 0.08);
+}
+
+.app-empty-state {
+    text-align: center;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 42px;
+}
+
+.app-empty-state .btn {
+    margin-top: 18px;
+}
+
+.app-page-simple-state {
+    padding: 72px 20px;
+}
+
+.app-page-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 28px;
+}
+
+.app-detail-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 24px;
+}
+
+.app-detail-list {
+    display: grid;
+    gap: 18px;
+}
+
+.app-detail-item {
+    background: linear-gradient(135deg, rgba(30, 58, 138, 0.05), rgba(251, 191, 36, 0.08));
+    border: 1px solid rgba(30, 58, 138, 0.08);
+    border-radius: 18px;
+    padding: 18px 20px;
+}
+
+.app-detail-item strong {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--primary-blue);
+}
+
+.app-detail-item span {
+    color: #4b5563;
+    line-height: 1.6;
+}
+
+@media (max-width: 960px) {
+    .app-page-hero-grid,
+    .app-detail-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .app-page-hero {
+        padding: 60px 0 44px;
+    }
+
+    .app-page-panel {
+        padding: 24px;
+        border-radius: 22px;
+    }
+
+    .app-page-title {
+        font-size: 34px;
+    }
+
+    .app-page-text {
+        font-size: 16px;
+    }
+
+    .app-page-content-section {
+        padding-bottom: 60px;
+    }
+
+    .app-empty-state {
+        padding: 30px 22px;
+    }
+}

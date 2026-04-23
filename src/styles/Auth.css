@@ -6,10 +6,40 @@
     align-items: center;
     justify-content: center;
     padding: 40px 20px;
-    background: linear-gradient(135deg, var(--light-white) 0%, rgba(30, 58, 138, 0.05) 100%);
+    position: relative;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at top left, rgba(251, 191, 36, 0.18), transparent 26%),
+        linear-gradient(135deg, #f9fbff 0%, rgba(30, 58, 138, 0.06) 55%, rgba(251, 191, 36, 0.08) 100%);
+}
+
+.auth-page::before,
+.auth-page::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.auth-page::before {
+    width: 320px;
+    height: 320px;
+    top: -130px;
+    right: -80px;
+    background: rgba(251, 191, 36, 0.16);
+}
+
+.auth-page::after {
+    width: 260px;
+    height: 260px;
+    left: -90px;
+    bottom: -100px;
+    background: rgba(30, 58, 138, 0.09);
 }
 
 .auth-container {
+    position: relative;
+    z-index: 1;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 70px;
@@ -18,24 +48,33 @@
     align-items: center;
 }
 
+.auth-box {
+    order: 2;
+}
+
+.auth-info-box {
+    order: 1;
+}
+
 .register-container {
     grid-template-columns: 1.1fr 0.9fr;
 }
 
 .auth-box {
-    background: white;
-    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.94);
+    border-radius: 28px;
     padding: 52px;
-    box-shadow: 0 8px 32px rgba(30, 58, 138, 0.12);
-    border: 1px solid rgba(30, 58, 138, 0.08);
+    box-shadow: 0 24px 56px rgba(30, 58, 138, 0.14);
+    border: 1px solid rgba(30, 58, 138, 0.1);
+    backdrop-filter: blur(14px);
 }
 
 .login-box {
-    background: linear-gradient(135deg, white 0%, rgba(251, 191, 36, 0.02) 100%);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(251, 191, 36, 0.06) 100%);
 }
 
 .register-box {
-    background: linear-gradient(135deg, white 0%, rgba(30, 58, 138, 0.02) 100%);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(30, 58, 138, 0.05) 100%);
 }
 
 .auth-header {
@@ -44,17 +83,18 @@
 }
 
 .auth-title {
-    font-size: 36px;
+    font-size: clamp(34px, 5vw, 46px);
     font-weight: 800;
     color: var(--primary-blue);
     margin-bottom: 14px;
-    letter-spacing: -0.5px;
+    letter-spacing: -0.8px;
+    line-height: 1.08;
 }
 
 .auth-subtitle {
-    font-size: 16px;
+    font-size: 17px;
     color: #6B7280;
-    line-height: 1.6;
+    line-height: 1.7;
     letter-spacing: 0.2px;
 }
 
@@ -98,13 +138,14 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 12px 16px;
-    border: 2px solid var(--light-gray);
-    border-radius: 10px;
+    padding: 14px 16px;
+    border: 1.5px solid rgba(30, 58, 138, 0.12);
+    border-radius: 16px;
     cursor: pointer;
     transition: var(--transition);
     font-weight: 500;
     user-select: none;
+    background: rgba(255, 255, 255, 0.72);
 }
 
 .role-option input[type="radio"] {
@@ -115,12 +156,14 @@
 .role-option:hover {
     border-color: var(--primary-blue);
     background-color: rgba(30, 58, 138, 0.05);
+    transform: translateY(-2px);
 }
 
 .role-option.active {
     border-color: var(--primary-blue);
-    background: linear-gradient(135deg, rgba(30, 58, 138, 0.1), rgba(251, 191, 36, 0.05));
+    background: linear-gradient(135deg, rgba(30, 58, 138, 0.1), rgba(251, 191, 36, 0.08));
     color: var(--primary-blue);
+    box-shadow: 0 14px 28px rgba(30, 58, 138, 0.08);
 }
 
 /* Checkbox */
@@ -130,6 +173,7 @@
     gap: 10px;
     font-size: 14px;
     color: #4B5563;
+    line-height: 1.6;
 }
 
 .auth-checkbox input[type="checkbox"] {
@@ -198,7 +242,7 @@
 .auth-footer {
     text-align: center;
     padding-top: 24px;
-    border-top: 1px solid var(--light-gray);
+    border-top: 1px solid rgba(30, 58, 138, 0.1);
 }
 
 .auth-footer p {
@@ -236,37 +280,98 @@
 .auth-info-box {
     background: linear-gradient(135deg, var(--primary-blue) 0%, #2d5aa8 100%);
     color: white;
-    border-radius: 16px;
+    border-radius: 28px;
     padding: 48px;
-    box-shadow: 0 8px 32px rgba(30, 58, 138, 0.2);
+    box-shadow: 0 24px 56px rgba(30, 58, 138, 0.22);
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-info-box::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at top right, rgba(251, 191, 36, 0.22), transparent 30%),
+        radial-gradient(circle at bottom left, rgba(255, 255, 255, 0.08), transparent 35%);
+    pointer-events: none;
+}
+
+.auth-info-box>* {
+    position: relative;
+    z-index: 1;
 }
 
 .auth-info-box h2 {
     font-size: 28px;
     font-weight: 800;
-    margin-bottom: 32px;
+    margin-bottom: 14px;
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.auth-info-subtitle {
+    font-size: 15px;
+    line-height: 1.75;
+    color: rgba(255, 255, 255, 0.82);
+    margin-bottom: 28px;
+    max-width: 480px;
 }
 
 .info-list {
     list-style: none;
     padding: 0;
+    display: grid;
+    gap: 14px;
 }
 
 .info-list li {
-    font-size: 16px;
-    margin-bottom: 18px;
-    line-height: 1.6;
     display: flex;
-    align-items: center;
-    gap: 12px;
-    opacity: 0.95;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 0;
+    padding: 16px 18px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
     transition: var(--transition);
 }
 
 .info-list li:hover {
-    opacity: 1;
-    transform: translateX(8px);
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.info-bullet {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(251, 191, 36, 0.2);
+    color: #fff3c2;
+    font-size: 18px;
+    border: 1px solid rgba(251, 191, 36, 0.28);
+}
+
+.info-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.info-content strong {
+    font-size: 15px;
+    font-weight: 700;
+    color: white;
+}
+
+.info-content span {
+    font-size: 14px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .register-info {
@@ -282,6 +387,11 @@
 
     .register-container {
         grid-template-columns: 1fr;
+    }
+
+    .auth-box,
+    .auth-info-box {
+        order: initial;
     }
 
     .auth-box {
@@ -330,6 +440,10 @@
     .auth-info-box h2 {
         font-size: 24px;
     }
+
+    .auth-info-subtitle {
+        margin-bottom: 22px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -339,7 +453,7 @@
 
     .auth-box {
         padding: 24px;
-        border-radius: 12px;
+        border-radius: 20px;
     }
 
     .auth-title {

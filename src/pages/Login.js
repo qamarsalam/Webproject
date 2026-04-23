@@ -29,7 +29,6 @@ function Login() {
 
     if (Object.keys(newErrors).length === 0) {
       setIsLoading(true);
-      // Simulate API call
       setTimeout(() => {
         setUser({ role, email, name: email.split("@")[0] });
         setIsLoading(false);
@@ -53,11 +52,8 @@ function Login() {
           </div>
 
           <form onSubmit={handleSubmit} className="auth-form">
-            {/* Email Field */}
             <div className="form-group">
-              <label className="form-label">
-                📧 Email Address
-              </label>
+              <label className="form-label">Email Address</label>
               <input
                 type="email"
                 className={`form-input ${errors.email ? "input-error" : ""}`}
@@ -71,11 +67,8 @@ function Login() {
               {errors.email && <span className="error-message">{errors.email}</span>}
             </div>
 
-            {/* Password Field */}
             <div className="form-group">
-              <label className="form-label">
-                🔐 Password
-              </label>
+              <label className="form-label">Password</label>
               <input
                 type="password"
                 className={`form-input ${errors.password ? "input-error" : ""}`}
@@ -89,11 +82,8 @@ function Login() {
               {errors.password && <span className="error-message">{errors.password}</span>}
             </div>
 
-            {/* Role Selection */}
             <div className="form-group">
-              <label className="form-label">
-                👤 Login As
-              </label>
+              <label className="form-label">Login As</label>
               <select
                 className="form-select"
                 value={role}
@@ -105,13 +95,11 @@ function Login() {
               </select>
             </div>
 
-            {/* Remember Me */}
             <div className="auth-checkbox">
               <input type="checkbox" id="remember" />
               <label htmlFor="remember">Remember me</label>
             </div>
 
-            {/* Login Button */}
             <button
               type="submit"
               className="btn btn-primary btn-block"
@@ -121,12 +109,10 @@ function Login() {
             </button>
           </form>
 
-          {/* Divider */}
           <div className="auth-divider">
             <span>Or continue as</span>
           </div>
 
-          {/* Demo Login Buttons */}
           <div className="demo-buttons">
             <button
               type="button"
@@ -144,7 +130,6 @@ function Login() {
             </button>
           </div>
 
-          {/* Sign Up Link */}
           <div className="auth-footer">
             <p>
               Don't have an account?{" "}
@@ -153,20 +138,38 @@ function Login() {
               </Link>
             </p>
             <Link to="/" className="back-link">
-              ← Back to Home
+              Back to Home
             </Link>
           </div>
         </div>
 
-        {/* Info Box */}
         <div className="auth-info-box">
           <h2>Why Join KUEvents?</h2>
+          <p className="auth-info-subtitle">
+            One place to discover campus activities, stay updated, and make your university experience more connected.
+          </p>
           <ul className="info-list">
-            <li>✨ Discover amazing university events</li>
-            <li>🎓 Connect with fellow students</li>
-            <li>📱 Easy event management</li>
-            <li>🔔 Never miss an event notification</li>
-            <li>🏆 Earn badges and rewards</li>
+            <li>
+              <span className="info-bullet" aria-hidden="true">📅</span>
+              <div className="info-content">
+                <strong>Discover campus events</strong>
+                <span>Find academic, social, and student-led activities in one feed.</span>
+              </div>
+            </li>
+            <li>
+              <span className="info-bullet" aria-hidden="true">🔔</span>
+              <div className="info-content">
+                <strong>Stay updated</strong>
+                <span>Get timely visibility into new opportunities and important event details.</span>
+              </div>
+            </li>
+            <li>
+              <span className="info-bullet" aria-hidden="true">🤝</span>
+              <div className="info-content">
+                <strong>Join the community</strong>
+                <span>Connect with students, organizers, and university initiatives more easily.</span>
+              </div>
+            </li>
           </ul>
         </div>
       </div>

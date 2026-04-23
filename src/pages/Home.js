@@ -40,7 +40,7 @@ function Home() {
         <div className="hero-overlay"></div>
         <div className="container">
           <div className="hero-content">
-            <h1 className="hero-title">Discover. Join. Enjoy.</h1>
+            <h1 className="hero-title">Discover • Join • Enjoy</h1>
             <p className="hero-subtitle">
               Official Kuwait University Event Hub — your platform for discovering, managing, and participating in campus events.
             </p>

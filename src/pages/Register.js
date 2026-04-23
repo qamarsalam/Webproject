@@ -34,15 +34,19 @@ function Register() {
     const newErrors = {};
     if (!formData.fullName.trim()) newErrors.fullName = "Full name is required";
     if (!formData.email.trim()) newErrors.email = "Email is required";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = "Please enter a valid email";
+    }
     if (!formData.password) newErrors.password = "Password is required";
-    if (formData.password.length < 8)
+    if (formData.password.length < 8) {
       newErrors.password = "Password must be at least 8 characters";
-    if (formData.password !== formData.confirmPassword)
+    }
+    if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = "Passwords do not match";
-    if (formData.role === "student" && !formData.college)
+    }
+    if (formData.role === "student" && !formData.college) {
       newErrors.college = "Please select your college";
+    }
     if (!formData.agreeTerms) newErrors.agreeTerms = "You must agree to the terms";
     return newErrors;
   };
@@ -63,7 +67,6 @@ function Register() {
 
     if (Object.keys(newErrors).length === 0) {
       setIsLoading(true);
-      // Simulate API call
       setTimeout(() => {
         setUser({
           role: formData.role,
@@ -87,9 +90,8 @@ function Register() {
           </div>
 
           <form onSubmit={handleSubmit} className="auth-form">
-            {/* Full Name */}
             <div className="form-group">
-              <label className="form-label">👤 Full Name</label>
+              <label className="form-label">Full Name</label>
               <input
                 type="text"
                 name="fullName"
@@ -98,14 +100,11 @@ function Register() {
                 value={formData.fullName}
                 onChange={handleChange}
               />
-              {errors.fullName && (
-                <span className="error-message">{errors.fullName}</span>
-              )}
+              {errors.fullName && <span className="error-message">{errors.fullName}</span>}
             </div>
 
-            {/* Email */}
             <div className="form-group">
-              <label className="form-label">📧 Email Address</label>
+              <label className="form-label">Email Address</label>
               <input
                 type="email"
                 name="email"
@@ -114,14 +113,11 @@ function Register() {
                 value={formData.email}
                 onChange={handleChange}
               />
-              {errors.email && (
-                <span className="error-message">{errors.email}</span>
-              )}
+              {errors.email && <span className="error-message">{errors.email}</span>}
             </div>
 
-            {/* Role Selection */}
             <div className="form-group">
-              <label className="form-label">👥 I am a</label>
+              <label className="form-label">I am a</label>
               <div className="role-selection">
                 <label className={`role-option ${formData.role === "student" ? "active" : ""}`}>
                   <input
@@ -131,7 +127,7 @@ function Register() {
                     checked={formData.role === "student"}
                     onChange={handleChange}
                   />
-                  <span>🎓 Student</span>
+                  <span>Student</span>
                 </label>
                 <label className={`role-option ${formData.role === "external" ? "active" : ""}`}>
                   <input
@@ -141,15 +137,14 @@ function Register() {
                     checked={formData.role === "external"}
                     onChange={handleChange}
                   />
-                  <span>👨‍💼 External</span>
+                  <span>External</span>
                 </label>
               </div>
             </div>
 
-            {/* College Selection - Only for students */}
             {formData.role === "student" && (
               <div className="form-group">
-                <label className="form-label">🏫 College</label>
+                <label className="form-label">College</label>
                 <select
                   name="college"
                   className={`form-select ${errors.college ? "input-error" : ""}`}
@@ -163,15 +158,12 @@ function Register() {
                     </option>
                   ))}
                 </select>
-                {errors.college && (
-                  <span className="error-message">{errors.college}</span>
-                )}
+                {errors.college && <span className="error-message">{errors.college}</span>}
               </div>
             )}
 
-            {/* Password */}
             <div className="form-group">
-              <label className="form-label">🔐 Password</label>
+              <label className="form-label">Password</label>
               <input
                 type="password"
                 name="password"
@@ -180,17 +172,14 @@ function Register() {
                 value={formData.password}
                 onChange={handleChange}
               />
-              {errors.password && (
-                <span className="error-message">{errors.password}</span>
-              )}
+              {errors.password && <span className="error-message">{errors.password}</span>}
               <p className="password-hint">
                 Must be at least 8 characters with letters, numbers, and symbols
               </p>
             </div>
 
-            {/* Confirm Password */}
             <div className="form-group">
-              <label className="form-label">🔐 Confirm Password</label>
+              <label className="form-label">Confirm Password</label>
               <input
                 type="password"
                 name="confirmPassword"
@@ -199,12 +188,9 @@ function Register() {
                 value={formData.confirmPassword}
                 onChange={handleChange}
               />
-              {errors.confirmPassword && (
-                <span className="error-message">{errors.confirmPassword}</span>
-              )}
+              {errors.confirmPassword && <span className="error-message">{errors.confirmPassword}</span>}
             </div>
 
-            {/* Terms and Conditions */}
             <div className="auth-checkbox">
               <input
                 type="checkbox"
@@ -224,11 +210,8 @@ function Register() {
                 </a>
               </label>
             </div>
-            {errors.agreeTerms && (
-              <span className="error-message">{errors.agreeTerms}</span>
-            )}
+            {errors.agreeTerms && <span className="error-message">{errors.agreeTerms}</span>}
 
-            {/* Register Button */}
             <button
               type="submit"
               className="btn btn-primary btn-block"
@@ -238,7 +221,6 @@ function Register() {
             </button>
           </form>
 
-          {/* Login Link */}
           <div className="auth-footer">
             <p>
               Already have an account?{" "}
@@ -253,20 +235,38 @@ function Register() {
               </Link>
             </p>
             <Link to="/" className="back-link">
-              ← Back to Home
+              Back to Home
             </Link>
           </div>
         </div>
 
-        {/* Info Box */}
         <div className="auth-info-box register-info">
           <h2>What You Get</h2>
+          <p className="auth-info-subtitle">
+            Your KUEvents account gives you a cleaner way to explore events, follow what matters, and build your student journey.
+          </p>
           <ul className="info-list">
-            <li>🎯 Personalized event recommendations</li>
-            <li>🔔 Smart notifications</li>
-            <li>💫 Build your event portfolio</li>
-            <li>🤝 Network with peers</li>
-            <li>🏅 Exclusive student benefits</li>
+            <li>
+              <span className="info-bullet" aria-hidden="true">🎯</span>
+              <div className="info-content">
+                <strong>Personalized recommendations</strong>
+                <span>See events that match your role, interests, and campus life.</span>
+              </div>
+            </li>
+            <li>
+              <span className="info-bullet" aria-hidden="true">🔔</span>
+              <div className="info-content">
+                <strong>Smarter notifications</strong>
+                <span>Keep track of updates, important dates, and event availability.</span>
+              </div>
+            </li>
+            <li>
+              <span className="info-bullet" aria-hidden="true">🌟</span>
+              <div className="info-content">
+                <strong>Stronger student profile</strong>
+                <span>Build your event journey and stay engaged with campus opportunities.</span>
+              </div>
+            </li>
           </ul>
         </div>
       </div>

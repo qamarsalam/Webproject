@@ -41,9 +41,7 @@ function OrganizerRequest() {
 
     if (Object.keys(newErrors).length === 0) {
       setIsLoading(true);
-      // Simulate API call
       setTimeout(() => {
-        // Save organizer request
         const organizerRequest = {
           ...formData,
           id: Date.now(),
@@ -51,7 +49,6 @@ function OrganizerRequest() {
           submittedAt: new Date().toISOString(),
         };
 
-        // Save to localStorage (in a real app, this would be an API call)
         const existingRequests = JSON.parse(localStorage.getItem("organizerRequests") || "[]");
         existingRequests.push(organizerRequest);
         localStorage.setItem("organizerRequests", JSON.stringify(existingRequests));
@@ -59,7 +56,6 @@ function OrganizerRequest() {
         setIsLoading(false);
         setIsSubmitted(true);
 
-        // Redirect after showing success message
         setTimeout(() => {
           navigate("/login");
         }, 3000);
@@ -81,7 +77,7 @@ function OrganizerRequest() {
               <p className="auth-subtitle">Your organizer request has been submitted for review.</p>
             </div>
             <div style={{ textAlign: "center", padding: "40px 0" }}>
-              <div style={{ fontSize: "48px", marginBottom: "20px" }}>✅</div>
+              <div style={{ fontSize: "48px", marginBottom: "20px" }}>Approved</div>
               <p style={{ color: "#6B7280", fontSize: "16px" }}>
                 We'll review your request and get back to you within 3-5 business days.
               </p>
@@ -105,11 +101,8 @@ function OrganizerRequest() {
           </div>
 
           <form onSubmit={handleSubmit} className="auth-form">
-            {/* First Name */}
             <div className="form-group">
-              <label className="form-label">
-                👤 First Name
-              </label>
+              <label className="form-label">First Name</label>
               <input
                 type="text"
                 className={`form-input ${errors.firstName ? "input-error" : ""}`}
@@ -121,11 +114,8 @@ function OrganizerRequest() {
               {errors.firstName && <span className="error-message">{errors.firstName}</span>}
             </div>
 
-            {/* Last Name */}
             <div className="form-group">
-              <label className="form-label">
-                👤 Last Name
-              </label>
+              <label className="form-label">Last Name</label>
               <input
                 type="text"
                 className={`form-input ${errors.lastName ? "input-error" : ""}`}
@@ -137,11 +127,8 @@ function OrganizerRequest() {
               {errors.lastName && <span className="error-message">{errors.lastName}</span>}
             </div>
 
-            {/* University Email */}
             <div className="form-group">
-              <label className="form-label">
-                📧 University Email
-              </label>
+              <label className="form-label">University Email</label>
               <input
                 type="email"
                 className={`form-input ${errors.universityEmail ? "input-error" : ""}`}
@@ -153,11 +140,8 @@ function OrganizerRequest() {
               {errors.universityEmail && <span className="error-message">{errors.universityEmail}</span>}
             </div>
 
-            {/* Club or Department Name */}
             <div className="form-group">
-              <label className="form-label">
-                🏛️ Club or Department Name
-              </label>
+              <label className="form-label">Club or Department Name</label>
               <input
                 type="text"
                 className={`form-input ${errors.clubDepartment ? "input-error" : ""}`}
@@ -169,11 +153,8 @@ function OrganizerRequest() {
               {errors.clubDepartment && <span className="error-message">{errors.clubDepartment}</span>}
             </div>
 
-            {/* Event Purpose / Description */}
             <div className="form-group">
-              <label className="form-label">
-                📝 Event Purpose / Description
-              </label>
+              <label className="form-label">Event Purpose / Description</label>
               <textarea
                 className={`form-input form-textarea ${errors.eventPurpose ? "input-error" : ""}`}
                 placeholder="Describe your organization and the types of events you plan to create..."
@@ -191,7 +172,6 @@ function OrganizerRequest() {
               </div>
             </div>
 
-            {/* Buttons */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginTop: "8px" }}>
               <button
                 type="button"
@@ -210,23 +190,40 @@ function OrganizerRequest() {
             </div>
           </form>
 
-          {/* Footer */}
           <div className="auth-footer">
             <Link to="/" className="back-link">
-              ← Back to Home
+              Back to Home
             </Link>
           </div>
         </div>
 
-        {/* Info Box */}
         <div className="auth-info-box register-info">
           <h2>Become an Event Organizer</h2>
+          <p className="auth-info-subtitle">
+            Create experiences that bring students together and manage your activities through a more professional workflow.
+          </p>
           <ul className="info-list">
-            <li>🎯 Create and manage university events</li>
-            <li>👥 Connect with students and faculty</li>
-            <li>📊 Track event attendance and feedback</li>
-            <li>🏆 Build your leadership experience</li>
-            <li>📅 Organize workshops, seminars, and activities</li>
+            <li>
+              <span className="info-bullet" aria-hidden="true">🗂️</span>
+              <div className="info-content">
+                <strong>Create and manage events</strong>
+                <span>Plan workshops, seminars, and student activities with clear visibility.</span>
+              </div>
+            </li>
+            <li>
+              <span className="info-bullet" aria-hidden="true">📣</span>
+              <div className="info-content">
+                <strong>Reach the right audience</strong>
+                <span>Connect with students and faculty through a trusted university platform.</span>
+              </div>
+            </li>
+            <li>
+              <span className="info-bullet" aria-hidden="true">🏆</span>
+              <div className="info-content">
+                <strong>Grow your leadership</strong>
+                <span>Build experience while organizing meaningful campus experiences.</span>
+              </div>
+            </li>
           </ul>
         </div>
       </div>
