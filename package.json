@@ -1,0 +1,24 @@
+{
+  "name": "webproject",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qamarsalam/Webproject.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/qamarsalam/Webproject/issues"
+  },
+  "homepage": "https://github.com/qamarsalam/Webproject#readme",
+  "dependencies": {
+    "mongoose": "^9.5.0"
+  }
+}
