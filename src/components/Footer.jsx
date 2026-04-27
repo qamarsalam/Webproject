@@ -9,7 +9,7 @@ function Footer() {
         <div className="container">
           <div className="footer-grid">
             {/* About Section */}
-            <div className="footer-section">
+            <div className="footer-section footer-brand">
               <img src={fpic} alt="Kuwait University Logo" className="footer-logo-image" />
               <h3 className="footer-title">KUEvents</h3>
               <p className="footer-description">

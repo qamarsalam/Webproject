@@ -9,7 +9,7 @@ function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleLogout = () => {
-    setUser({ role: "external" });
+    setUser({ id: null, role: "external" });
     setIsMenuOpen(false);
     navigate("/login");
   };

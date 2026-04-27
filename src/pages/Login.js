@@ -30,7 +30,8 @@ function Login() {
     if (Object.keys(newErrors).length === 0) {
       setIsLoading(true);
       setTimeout(() => {
-        setUser({ role, email, name: email.split("@")[0] });
+        const userId = `${email}`.replace(/[@.]/g, "").substring(0, 20);
+        setUser({ id: userId, role, email, name: email.split("@")[0] });
         setIsLoading(false);
         navigate("/events");
       }, 1000);
@@ -38,7 +39,8 @@ function Login() {
   };
 
   const handleDemoLogin = (demoRole) => {
-    setUser({ role: demoRole, email: `demo-${demoRole}@ku.edu.kw`, name: `Demo ${demoRole}` });
+    const demoId = `demo-${demoRole}-${Date.now()}`;
+    setUser({ id: demoId, role: demoRole, email: `demo-${demoRole}@ku.edu.kw`, name: `Demo ${demoRole}` });
     navigate("/events");
   };
 

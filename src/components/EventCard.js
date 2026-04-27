@@ -16,6 +16,16 @@ function EventCard({ event }) {
 
   return (
     <div className="event-card card">
+      {event.image && (
+        <div className="event-card-image-wrap">
+          <img
+            src={event.image}
+            alt={event.title}
+            className="event-card-image"
+          />
+        </div>
+      )}
+
       <div className="event-header">
         <h3 className="event-title">{event.title}</h3>
         <span className={`badge ${visibilityBadgeClass}`}>{visibilityLabel}</span>

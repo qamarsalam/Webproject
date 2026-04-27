@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import EventCard from "../components/EventCard";
 import events from "../data/events";
 import { AuthContext } from "../context/AuthContext";
-import heroImage from "../images/download.jpg";
+import heroImage from "../images/KUlogo.png";
 import "../styles/KUEvents.css";
 import "../styles/Home.css";
 

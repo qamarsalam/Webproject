@@ -68,7 +68,9 @@ function Register() {
     if (Object.keys(newErrors).length === 0) {
       setIsLoading(true);
       setTimeout(() => {
+        const userId = `${formData.email}`.replace(/[@.]/g, "").substring(0, 20);
         setUser({
+          id: userId,
           role: formData.role,
           email: formData.email,
           name: formData.fullName,

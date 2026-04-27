@@ -6,7 +6,28 @@
     gap: 18px;
     transition: var(--transition);
     border: 1px solid rgba(30, 58, 138, 0.08);
-    padding: 28px !important;
+    padding: 0 0 28px !important;
+    border-radius: 22px;
+    overflow: hidden;
+    min-height: 100%;
+}
+
+.event-card-image-wrap {
+    width: 100%;
+    overflow: hidden;
+    border-radius: 22px 22px 0 0;
+}
+
+.event-card-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.45s ease;
+}
+
+.event-card-image-wrap:hover .event-card-image {
+    transform: scale(1.05);
 }
 
 .event-card:hover {

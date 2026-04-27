@@ -1,5 +1,12 @@
+import cyberImage from "../images/cyber.png";
+import researchImage from "../images/research.png";
+import bootcampImage from "../images/Bootcamp.png";
+import cultureImage from "../images/culture.png";
+import robotics from "../images/robotics.png";
+
 const events = [
   {
+    /*
     id: 1,
     title: "AI Workshop",
     description: "Introduction to Artificial Intelligence",
@@ -7,6 +14,7 @@ const events = [
     location: "KU Shadadiya Campus",
     visibility: "ku-only",
     category: "Workshop",
+    seats: 50,*/
   },
   {
     id: 2,
@@ -16,6 +24,8 @@ const events = [
     location: "KU Khaldiya Campus",
     visibility: "public",
     category: "Seminar",
+    image: cyberImage,
+    seats: 120,
   },
   {
     id: 3,
@@ -25,15 +35,19 @@ const events = [
     location: "College of Science",
     visibility: "public",
     category: "Research",
+    image: researchImage,
+    seats: 200,
   },
   {
     id: 4,
     title: "Advanced Robotics",
     description: "A KU-only lab tour and demo",
     date: "2026-04-25",
-    location: "Engineering Lab",
+    location: "College of Engineering",
     visibility: "ku-only",
     category: "Academic",
+    seats: 35,
+    image: robotics,
   },
   {
     id: 5,
@@ -41,17 +55,21 @@ const events = [
     description: "Build your startup skills with mentors and workshops",
     date: "2026-05-05",
     location: "Business Innovation Hub",
-    visibility: "public",
+    visibility: "ku-only",
     category: "Workshop",
+    image: bootcampImage,
+    seats: 80,
   },
   {
     id: 6,
-    title: "Cultural Night",
+    title: "Cultural Day",
     description: "Celebrate university diversity with performances and exhibitions",
     date: "2026-05-12",
     location: "KU Main Auditorium",
     visibility: "public",
     category: "Seminar",
+    image: cultureImage,
+    seats: 500,
   },
 ];
 
