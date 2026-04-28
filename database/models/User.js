@@ -1,3 +1,4 @@
+const bcrypt = require("../../backend/node_modules/bcryptjs");
 const { mongoose } = require("../config/db");
 const Counter = require("./Counter");
 
@@ -78,7 +79,7 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-userSchema.pre("validate", function setExternalParticipantRules(next) {
+userSchema.pre("validate", function setExternalParticipantRules() {
   if (this.role === "EXTERNAL_PARTICIPANT" && !this.mobileNumber) {
     this.invalidate(
       "mobileNumber",
@@ -89,18 +90,27 @@ userSchema.pre("validate", function setExternalParticipantRules(next) {
   if (this.role !== "EXTERNAL_PARTICIPANT" && !this.mobileNumber) {
     this.mobileNumber = null;
   }
-
-  next();
 });
 
-userSchema.pre("save", async function assignUserId(next) {
+userSchema.pre("save", async function assignUserId() {
   if (!this.isNew || this.userID) {
-    return next();
+    return;
   }
 
   this.userID = await Counter.getNextSequence("userID");
-  next();
 });
+
+userSchema.pre("save", async function hashPassword() {
+  if (!this.isModified("password")) {
+    return;
+  }
+
+  this.password = await bcrypt.hash(this.password, 10);
+});
+
+userSchema.methods.comparePassword = function comparePassword(candidatePassword) {
+  return bcrypt.compare(candidatePassword, this.password);
+};
 
 userSchema.virtual("organizerProfile", {
   ref: "Organizer",
