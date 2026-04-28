@@ -4,15 +4,37 @@ import EventCard from "../components/EventCard";
 import { AuthContext } from "../context/AuthContext";
 import "../styles/AppPages.css";
 
+function getOrganizerPublishedEvents() {
+  const savedEvents = JSON.parse(localStorage.getItem("organizerEvents") || "[]");
+
+  return savedEvents
+    .filter((event) => event.status === "Published")
+    .map((event) => ({
+      id: event.id,
+      title: event.title,
+      description: event.description,
+      date: event.date,
+      location: event.location,
+      visibility: event.visibility === "KU Only" ? "ku-only" : "public",
+      category: event.category || "Organizer Event",
+      image: event.photo || null,
+      seats: Number(event.seats || 100),
+      organizerName: event.organizerName,
+      isOrganizerCreated: true,
+    }));
+}
+
 function Events() {
   const { user } = useContext(AuthContext);
   const [search, setSearch] = useState("");
 
   const visibleEvents = useMemo(() => {
-    return events.filter((event) => {
+    const allEvents = [...events, ...getOrganizerPublishedEvents()];
+
+    return allEvents.filter((event) => {
       const matchesRole =
         event.visibility === "public" ||
-        (event.visibility === "ku-only" && user?.role === "student");
+        (event.visibility === "ku-only" && ["student", "organizer"].includes(user?.role));
 
       if (!matchesRole) return false;
 
@@ -74,7 +96,7 @@ function Events() {
             <div className="app-empty-state card">
               <h3 className="card-header">No events match your current access</h3>
               <p className="card-text">
-                Login as a KU student to see KU-only events, or try a different search term.
+                Login as a KU student or organizer to see KU-only events, or try a different search term.
               </p>
             </div>
           ) : (

@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import events from "../data/events";
 import { AuthContext } from "../context/AuthContext";
@@ -14,15 +14,49 @@ const eventDetails = {
   6: "Cultural Day celebrates the rich diversity of Kuwait University with performances, exhibitions, and cultural showcases from students and student organizations around campus.",
 };
 
+function getOrganizerPublishedEvents() {
+  const savedEvents = JSON.parse(localStorage.getItem("organizerEvents") || "[]");
+
+  return savedEvents
+    .filter((event) => event.status === "Published")
+    .map((event) => ({
+      id: event.id,
+      title: event.title,
+      description: event.description,
+      date: event.date,
+      location: event.location,
+      visibility: event.visibility === "KU Only" ? "ku-only" : "public",
+      category: event.category || "Organizer Event",
+      image: event.photo || null,
+      seats: Number(event.seats || 100),
+      organizerName: event.organizerName,
+      isOrganizerCreated: true,
+    }));
+}
+
+function getDescriptionPreview(description) {
+  if (!description) return "";
+  const cleanDescription = description.trim();
+
+  if (cleanDescription.length <= 180) return cleanDescription;
+  return `${cleanDescription.slice(0, 180).trim()}...`;
+}
+
 function EventDetails() {
   const { user } = useContext(AuthContext);
   const { registerUser, isUserRegistered, getAvailableSeats } = useContext(RegistrationContext);
   const { id } = useParams();
   const [registrationMessage, setRegistrationMessage] = useState("");
 
-  const event = events.find((item) => item.id === Number(id));
+  const allEvents = useMemo(() => [...events, ...getOrganizerPublishedEvents()], []);
+  const event = allEvents.find((item) => String(item.id) === id);
   const availableSeats = event ? getAvailableSeats(event.id, event.seats) : 0;
   const isRegistered = event && user?.id ? isUserRegistered(event.id, user.id) : false;
+  const fullDescription = event ? eventDetails[event.id] || event.description : "";
+  const descriptionParagraphs = fullDescription
+    .split(/\n+/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean);
 
   const handleRegister = () => {
     if (!user || !user.id) {
@@ -41,7 +75,7 @@ function EventDetails() {
     }
 
     registerUser(event.id, user.id, event.seats);
-    setRegistrationMessage(`✓ Successfully registered! ${availableSeats - 1} seats remaining`);
+    setRegistrationMessage(`Successfully registered! ${availableSeats - 1} seats remaining`);
   };
 
   if (!event) {
@@ -58,13 +92,13 @@ function EventDetails() {
     );
   }
 
-  if (event.visibility === "ku-only" && user?.role !== "student") {
+  if (event.visibility === "ku-only" && !["student", "organizer"].includes(user?.role)) {
     return (
       <div className="app-page-shell">
         <div className="container app-page-simple-state">
           <div className="app-empty-state card">
-            <h2 className="card-header">This event is restricted to KU students</h2>
-            <p className="card-text">Sign in with a student account to view full details for campus-only events.</p>
+            <h2 className="card-header">This event is restricted to KU students and organizers</h2>
+            <p className="card-text">Sign in with a student or organizer account to view full details for campus-only events.</p>
             <Link to="/login" className="btn btn-primary">Go to Login</Link>
           </div>
         </div>
@@ -77,16 +111,20 @@ function EventDetails() {
       <section className="app-page-hero">
         <div className="container app-page-hero-grid">
           <div className="app-page-copy">
-            {event.image && (
+            {event.image ? (
               <div className="app-page-hero-image-wrap">
                 <img src={event.image} alt={event.title} className="app-page-hero-image" />
+              </div>
+            ) : (
+              <div className="app-page-hero-placeholder">
+                <span>{event.category}</span>
               </div>
             )}
             <span className={`badge ${event.visibility === "ku-only" ? "badge-primary" : "badge-gold"}`}>
               {event.visibility === "ku-only" ? "KU Only" : "Public Event"}
             </span>
             <h1 className="app-page-title">{event.title}</h1>
-            <p className="app-page-text">{eventDetails[event.id] || event.description}</p>
+            <p className="app-page-text">{getDescriptionPreview(fullDescription)}</p>
             <div className="app-page-actions">
               <Link to="/events" className="btn btn-outline">Back to Events</Link>
               <Link to="/contact" className="btn btn-primary">Contact Organizers</Link>
@@ -107,6 +145,12 @@ function EventDetails() {
                 <strong>Category</strong>
                 <span>{event.category}</span>
               </div>
+              {event.organizerName && (
+                <div className="app-detail-item">
+                  <strong>Organizer</strong>
+                  <span>{event.organizerName}</span>
+                </div>
+              )}
               <div className="app-detail-item">
                 <strong>Audience</strong>
                 <span>{event.visibility === "ku-only" ? "KU Students Only" : "Open to everyone"}</span>
@@ -122,10 +166,10 @@ function EventDetails() {
               disabled={isRegistered || availableSeats === 0}
               style={{ width: "100%", marginTop: "20px" }}
             >
-              {isRegistered ? "Already Registered ✓" : availableSeats === 0 ? "Event Full" : "Register for Event"}
+              {isRegistered ? "Already Registered" : availableSeats === 0 ? "Event Full" : "Register for Event"}
             </button>
             {registrationMessage && (
-              <p style={{ marginTop: "12px", fontSize: "14px", color: registrationMessage.includes("✓") ? "#10b981" : "#ef4444", textAlign: "center" }}>
+              <p style={{ marginTop: "12px", fontSize: "14px", color: registrationMessage.includes("Successfully") ? "#10b981" : "#ef4444", textAlign: "center" }}>
                 {registrationMessage}
               </p>
             )}
@@ -135,9 +179,13 @@ function EventDetails() {
 
       <section className="app-page-content-section">
         <div className="container app-detail-grid">
-          <div className="card app-detail-card">
+          <div className="card app-detail-card app-detail-card-wide-text">
             <h3 className="card-header">About this event</h3>
-            <p className="card-text">{event.description}</p>
+            <div className="app-detail-long-text">
+              {descriptionParagraphs.map((paragraph, index) => (
+                <p key={index}>{paragraph}</p>
+              ))}
+            </div>
           </div>
 
           <div className="card app-detail-card">

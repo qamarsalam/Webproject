@@ -7,13 +7,34 @@ import heroImage from "../images/KUlogo.png";
 import "../styles/KUEvents.css";
 import "../styles/Home.css";
 
+function getOrganizerPublishedEvents() {
+  const savedEvents = JSON.parse(localStorage.getItem("organizerEvents") || "[]");
+
+  return savedEvents
+    .filter((event) => event.status === "Published")
+    .map((event) => ({
+      id: event.id,
+      title: event.title,
+      description: event.description,
+      date: event.date,
+      location: event.location,
+      visibility: event.visibility === "KU Only" ? "ku-only" : "public",
+      category: event.category || "Organizer Event",
+      image: event.photo || null,
+      seats: Number(event.seats || 100),
+      organizerName: event.organizerName,
+      isOrganizerCreated: true,
+    }));
+}
+
 function Home() {
   const { user } = useContext(AuthContext);
 
   const visibleEvents = useMemo(() => {
-    return events.filter((event) => {
+    const allEvents = [...events, ...getOrganizerPublishedEvents()];
+    return allEvents.filter((event) => {
       if (event.visibility === "public") return true;
-      if (event.visibility === "ku-only" && user?.role === "student") return true;
+      if (event.visibility === "ku-only" && ["student", "organizer"].includes(user?.role)) return true;
       return false;
     });
   }, [user]);
@@ -179,3 +200,6 @@ function Home() {
 }
 
 export default Home;
+
+
+

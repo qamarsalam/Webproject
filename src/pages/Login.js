@@ -33,7 +33,7 @@ function Login() {
         const userId = `${email}`.replace(/[@.]/g, "").substring(0, 20);
         setUser({ id: userId, role, email, name: email.split("@")[0] });
         setIsLoading(false);
-        navigate("/events");
+        navigate(role === "organizer" ? "/organizer-dashboard" : "/events");
       }, 1000);
     }
   };
@@ -41,7 +41,7 @@ function Login() {
   const handleDemoLogin = (demoRole) => {
     const demoId = `demo-${demoRole}-${Date.now()}`;
     setUser({ id: demoId, role: demoRole, email: `demo-${demoRole}@ku.edu.kw`, name: `Demo ${demoRole}` });
-    navigate("/events");
+    navigate(demoRole === "organizer" ? "/organizer-dashboard" : "/events");
   };
 
   return (
@@ -180,3 +180,4 @@ function Login() {
 }
 
 export default Login;
+

@@ -38,6 +38,11 @@ function Navbar() {
           <NavLink to="/events" className={linkClassName} onClick={closeMenu}>
             Events
           </NavLink>
+          {user?.role === "organizer" && (
+            <NavLink to="/organizer-dashboard" className={linkClassName} onClick={closeMenu}>
+              Organizer Dashboard
+            </NavLink>
+          )}
           <NavLink to="/create-event" className={linkClassName} onClick={closeMenu}>
             Create Event
           </NavLink>

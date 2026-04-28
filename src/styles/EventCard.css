@@ -119,3 +119,52 @@
         font-size: 13px;
     }
 }
+.event-description {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.meta-icon {
+    flex: 0 0 52px;
+    width: 52px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--primary-blue);
+}
+
+.meta-text {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.meta-icon {
+    flex: 0 0 24px;
+    width: 24px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--primary-blue);
+}
+
+.meta-icon {
+    flex: 0 0 24px;
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #8b98a8;
+}
+
+.meta-icon svg {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
