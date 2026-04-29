@@ -1,8 +1,48 @@
-import { useContext, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import events from "../data/events";
 import EventCard from "../components/EventCard";
 import { AuthContext } from "../context/AuthContext";
+import { apiRequest } from "../utils/api";
+import cyberImage from "../images/cyber.png";
+import researchImage from "../images/research.png";
+import bootcampImage from "../images/Bootcamp.png";
+import cultureImage from "../images/culture.png";
+import roboticsImage from "../images/robotics.png";
 import "../styles/AppPages.css";
+
+const staticEventImages = {
+  2: cyberImage,
+  3: researchImage,
+  4: roboticsImage,
+  5: bootcampImage,
+  6: cultureImage,
+};
+
+function toFrontendVisibility(visibility) {
+  return String(visibility || "").toUpperCase() === "KU_ONLY" ? "ku-only" : "public";
+}
+
+function toDateDisplay(value) {
+  if (!value) return "";
+  return String(value).slice(0, 10);
+}
+
+function mapBackendEvent(event) {
+  return {
+    id: event.id || event.eventID,
+    eventID: event.eventID || event.id,
+    title: event.title,
+    description: event.description,
+    date: toDateDisplay(event.eventDate),
+    location: event.location,
+    visibility: toFrontendVisibility(event.visibility),
+    category: event.category,
+    image: event.posterURL || staticEventImages[event.eventID] || null,
+    seats: event.capacityLimit || 100,
+    registrations: event.registrationCount || event.registrations || 0,
+    isDatabaseEvent: true,
+  };
+}
 
 function getOrganizerPublishedEvents() {
   const savedEvents = JSON.parse(localStorage.getItem("organizerEvents") || "[]");
@@ -28,9 +68,29 @@ function getOrganizerPublishedEvents() {
 function Events() {
   const { user } = useContext(AuthContext);
   const [search, setSearch] = useState("");
+  const [databaseEvents, setDatabaseEvents] = useState([]);
+  const [loadError, setLoadError] = useState("");
+
+  useEffect(() => {
+    async function loadEvents() {
+      try {
+        const data = await apiRequest("/events?status=PUBLISHED");
+        setDatabaseEvents(data.events.map(mapBackendEvent));
+        setLoadError("");
+      } catch (error) {
+        setDatabaseEvents([]);
+        setLoadError("Showing saved frontend events because the database events could not load.");
+      }
+    }
+
+    loadEvents();
+  }, []);
 
   const visibleEvents = useMemo(() => {
-    const allEvents = [...events, ...getOrganizerPublishedEvents()];
+    const allEvents =
+      databaseEvents.length > 0
+        ? databaseEvents
+        : [...events.filter((event) => event.id), ...getOrganizerPublishedEvents()];
 
     return allEvents.filter((event) => {
       const matchesRole =
@@ -46,7 +106,7 @@ function Events() {
         event.location.toLowerCase().includes(search.toLowerCase())
       );
     });
-  }, [user, search]);
+  }, [user, search, databaseEvents]);
 
   return (
     <div className="app-page-shell">
@@ -93,6 +153,7 @@ function Events() {
 
       <section className="app-page-content-section">
         <div className="container">
+          {loadError && <p className="error-message">{loadError}</p>}
           {visibleEvents.length === 0 ? (
             <div className="app-empty-state card">
               <h3 className="card-header">No events match your current access</h3>

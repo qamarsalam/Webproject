@@ -1,6 +1,7 @@
 const express = require("express");
 const Event = require("../../database/models/Event");
 const Organizer = require("../../database/models/Organizer");
+const Registration = require("../../database/models/Registration");
 const { authenticateToken, authorizeRoles } = require("../middleware/authMiddleware");
 
 const router = express.Router();
@@ -15,7 +16,7 @@ function normalizeStatus(value) {
   return String(value).trim().replace(/[\s-]+/g, "_").toUpperCase();
 }
 
-function serializeEvent(event) {
+function serializeEvent(event, registrationCount = 0) {
   return {
     id: event.eventID,
     eventID: event.eventID,
@@ -34,7 +35,18 @@ function serializeEvent(event) {
     registrationRequired: event.registrationRequired,
     capacityLimit: event.capacityLimit,
     createdAt: event.createdAt,
+    registrationCount,
+    registrations: registrationCount,
   };
+}
+
+async function serializeEventWithCounts(event) {
+  const registrationCount = await Registration.countDocuments({
+    eventID: event.eventID,
+    registrationStatus: "REGISTERED",
+  });
+
+  return serializeEvent(event, registrationCount);
 }
 
 function buildEventPayload(body, organizerID) {
@@ -95,7 +107,8 @@ router.get("/", async (req, res, next) => {
     if (category) filter.category = category;
 
     const events = await Event.find(filter).sort({ eventDate: 1, createdAt: -1 });
-    res.status(200).json({ events: events.map(serializeEvent) });
+    const serializedEvents = await Promise.all(events.map(serializeEventWithCounts));
+    res.status(200).json({ events: serializedEvents });
   } catch (error) {
     next(error);
   }
@@ -109,7 +122,8 @@ router.get(
     try {
       if (req.user.role === "ADMIN") {
         const events = await Event.find().sort({ eventDate: 1, createdAt: -1 });
-        return res.status(200).json({ events: events.map(serializeEvent) });
+        const serializedEvents = await Promise.all(events.map(serializeEventWithCounts));
+        return res.status(200).json({ events: serializedEvents });
       }
 
       const organizer = await Organizer.findOne({ userID: req.user.id });
@@ -123,7 +137,8 @@ router.get(
         createdAt: -1,
       });
 
-      res.status(200).json({ events: events.map(serializeEvent) });
+      const serializedEvents = await Promise.all(events.map(serializeEventWithCounts));
+      res.status(200).json({ events: serializedEvents });
     } catch (error) {
       next(error);
     }
@@ -138,7 +153,7 @@ router.get("/:id", async (req, res, next) => {
       return res.status(404).json({ message: "Event not found" });
     }
 
-    res.status(200).json({ event: serializeEvent(event) });
+    res.status(200).json({ event: await serializeEventWithCounts(event) });
   } catch (error) {
     next(error);
   }

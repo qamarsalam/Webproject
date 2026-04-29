@@ -1,10 +1,23 @@
-import { useContext, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import events from "../data/events";
 import { AuthContext } from "../context/AuthContext";
 import { RegistrationContext } from "../context/RegistrationContext";
 import { apiRequest } from "../utils/api";
+import cyberImage from "../images/cyber.png";
+import researchImage from "../images/research.png";
+import bootcampImage from "../images/Bootcamp.png";
+import cultureImage from "../images/culture.png";
+import roboticsImage from "../images/robotics.png";
 import "../styles/AppPages.css";
+
+const staticEventImages = {
+  2: cyberImage,
+  3: researchImage,
+  4: roboticsImage,
+  5: bootcampImage,
+  6: cultureImage,
+};
 
 const eventDetails = {
   1: "This AI Workshop gives KU students a practical introduction to machine learning models, data preparation, and real-world applications. Participants explore supervised and unsupervised techniques, build simple projects, and learn how AI can support campus research and innovation.",
@@ -14,6 +27,33 @@ const eventDetails = {
   5: "The Entrepreneurship Bootcamp helps aspiring founders turn ideas into viable ventures. Participants work with mentors on business models, pitching, and growth strategies while building connections across KU's innovation ecosystem.",
   6: "Cultural Day celebrates the rich diversity of Kuwait University with performances, exhibitions, and cultural showcases from students and student organizations around campus.",
 };
+
+function toFrontendVisibility(visibility) {
+  return String(visibility || "").toUpperCase() === "KU_ONLY" ? "ku-only" : "public";
+}
+
+function toDateDisplay(value) {
+  if (!value) return "";
+  return String(value).slice(0, 10);
+}
+
+function mapBackendEvent(event) {
+  return {
+    id: event.id || event.eventID,
+    eventID: event.eventID || event.id,
+    title: event.title,
+    description: event.description,
+    date: toDateDisplay(event.eventDate),
+    location: event.location,
+    visibility: toFrontendVisibility(event.visibility),
+    category: event.category,
+    image: event.posterURL || staticEventImages[event.eventID] || null,
+    seats: event.capacityLimit || 100,
+    registrations: event.registrationCount || event.registrations || 0,
+    organizerID: event.organizerID,
+    isDatabaseEvent: true,
+  };
+}
 
 function getOrganizerPublishedEvents() {
   const savedEvents = JSON.parse(localStorage.getItem("organizerEvents") || "[]");
@@ -48,9 +88,32 @@ function EventDetails() {
   const { user } = useContext(AuthContext);
   const { registerUser, isUserRegistered, getAvailableSeats } = useContext(RegistrationContext);
   const { id } = useParams();
+  const [databaseEvent, setDatabaseEvent] = useState(null);
+  const [isLoadingEvent, setIsLoadingEvent] = useState(true);
   const [registrationMessage, setRegistrationMessage] = useState("");
 
-  const allEvents = useMemo(() => [...events, ...getOrganizerPublishedEvents()], []);
+  useEffect(() => {
+    async function loadEvent() {
+      setIsLoadingEvent(true);
+
+      try {
+        const data = await apiRequest(`/events/${id}`);
+        setDatabaseEvent(mapBackendEvent(data.event));
+      } catch (error) {
+        setDatabaseEvent(null);
+      } finally {
+        setIsLoadingEvent(false);
+      }
+    }
+
+    loadEvent();
+  }, [id]);
+
+  const allEvents = useMemo(() => {
+    if (databaseEvent) return [databaseEvent];
+    return [...events.filter((item) => item.id), ...getOrganizerPublishedEvents()];
+  }, [databaseEvent]);
+
   const event = allEvents.find((item) => String(item.id) === id);
   const availableSeats = event ? getAvailableSeats(event.id, event.seats) : 0;
   const isRegistered = event && user?.id ? isUserRegistered(event.id, user.id) : false;
@@ -76,7 +139,7 @@ function EventDetails() {
       return;
     }
 
-    if (event.isOrganizerCreated) {
+    if (event.isDatabaseEvent || event.isOrganizerCreated) {
       try {
         await apiRequest("/registrations", {
           method: "POST",
@@ -91,6 +154,18 @@ function EventDetails() {
     registerUser(event.id, user.id, event.seats);
     setRegistrationMessage(`Successfully registered! ${availableSeats - 1} seats remaining`);
   };
+
+  if (isLoadingEvent) {
+    return (
+      <div className="app-page-shell">
+        <div className="container app-page-simple-state">
+          <div className="app-empty-state card">
+            <h2 className="card-header">Loading event...</h2>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!event) {
     return (
