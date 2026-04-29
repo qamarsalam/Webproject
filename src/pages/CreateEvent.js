@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import { apiRequest } from "../utils/api";
 import "../styles/InfoPages.css";
 
 const initialFormData = {
@@ -13,6 +14,53 @@ const initialFormData = {
   seats: "",
 };
 
+function toDisplayStatus(status) {
+  return String(status || "").toUpperCase() === "PUBLISHED" ? "Published" : "Draft";
+}
+
+function toDisplayVisibility(visibility) {
+  return String(visibility || "").toUpperCase() === "KU_ONLY" ? "KU Only" : "Public";
+}
+
+function toDateInputValue(value) {
+  if (!value) return "";
+  return String(value).slice(0, 10);
+}
+
+function mapBackendEvent(event) {
+  return {
+    id: event.id || event.eventID,
+    eventID: event.eventID || event.id,
+    title: event.title || "",
+    description: event.description || "",
+    date: toDateInputValue(event.eventDate),
+    location: event.location || "",
+    category: event.category || "Workshop",
+    visibility: toDisplayVisibility(event.visibility),
+    seats: event.capacityLimit || "",
+    status: toDisplayStatus(event.status),
+    photo: event.posterURL || null,
+    photoName: event.posterURL ? "Current event photo" : null,
+  };
+}
+
+function buildBackendPayload(formData, status, eventPhoto) {
+  return {
+    title: formData.title,
+    description: formData.description,
+    category: formData.category,
+    eventDate: formData.date,
+    startTime: "09:00",
+    endTime: "10:00",
+    location: formData.location,
+    visibility: formData.visibility,
+    status,
+    posterURL: eventPhoto?.preview || null,
+    registrationRequired: true,
+    capacityLimit: Number(formData.seats),
+  };
+}
+
 function CreateEvent() {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -20,7 +68,7 @@ function CreateEvent() {
   const [eventPhoto, setEventPhoto] = useState(null);
   const [formData, setFormData] = useState(initialFormData);
   const [errors, setErrors] = useState({});
-  const [editingEvent, setEditingEvent] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   const isOrganizer = user?.role === "organizer";
   const isEditMode = Boolean(eventId);
@@ -29,32 +77,56 @@ function CreateEvent() {
     if (!eventId) {
       setFormData(initialFormData);
       setEventPhoto(null);
-      setEditingEvent(null);
       return;
     }
 
-    const existingEvents = JSON.parse(localStorage.getItem("organizerEvents") || "[]");
-    const eventToEdit = existingEvents.find((event) => String(event.id) === String(eventId));
+    async function loadEventToEdit() {
+      try {
+        const data = await apiRequest(`/events/${eventId}`);
+        const backendEvent = mapBackendEvent(data.event);
+        setFormData({
+          title: backendEvent.title,
+          description: backendEvent.description,
+          date: backendEvent.date,
+          location: backendEvent.location,
+          category: backendEvent.category,
+          visibility: backendEvent.visibility,
+          seats: backendEvent.seats,
+        });
 
-    if (!eventToEdit) return;
+        if (backendEvent.photo) {
+          setEventPhoto({
+            name: backendEvent.photoName,
+            preview: backendEvent.photo,
+          });
+        }
+        return;
+      } catch (error) {
+        const existingEvents = JSON.parse(localStorage.getItem("organizerEvents") || "[]");
+        const eventToEdit = existingEvents.find((event) => String(event.id) === String(eventId));
 
-    setEditingEvent(eventToEdit);
-    setFormData({
-      title: eventToEdit.title || "",
-      description: eventToEdit.description || "",
-      date: eventToEdit.date || "",
-      location: eventToEdit.location || "",
-      category: eventToEdit.category || "Workshop",
-      visibility: eventToEdit.visibility || "Public",
-      seats: eventToEdit.seats || "",
-    });
+        if (!eventToEdit) return;
 
-    if (eventToEdit.photo) {
-      setEventPhoto({
-        name: eventToEdit.photoName || "Current event photo",
-        preview: eventToEdit.photo,
-      });
+        setFormData({
+          title: eventToEdit.title || "",
+          description: eventToEdit.description || "",
+          date: eventToEdit.date || "",
+          location: eventToEdit.location || "",
+          category: eventToEdit.category || "Workshop",
+          visibility: eventToEdit.visibility || "Public",
+          seats: eventToEdit.seats || "",
+        });
+
+        if (eventToEdit.photo) {
+          setEventPhoto({
+            name: eventToEdit.photoName || "Current event photo",
+            preview: eventToEdit.photo,
+          });
+        }
+      }
     }
+
+    loadEventToEdit();
   }, [eventId]);
 
   const handleChange = (event) => {
@@ -97,49 +169,42 @@ function CreateEvent() {
     return newErrors;
   };
 
-  const saveEvent = (status) => {
+  const saveEvent = async (status) => {
     const newErrors = validateForm();
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length > 0) return;
 
+    setIsSaving(true);
     const existingEvents = JSON.parse(localStorage.getItem("organizerEvents") || "[]");
 
-    if (isEditMode && editingEvent) {
-      const updatedEvents = existingEvents.map((event) =>
-        String(event.id) === String(eventId)
-          ? {
-              ...event,
-              ...formData,
-              seats: Number(formData.seats),
-              status,
-              photo: eventPhoto?.preview || null,
-              photoName: eventPhoto?.name || null,
-              updatedAt: new Date().toISOString(),
-            }
-          : event
-      );
+    try {
+      const payload = buildBackendPayload(formData, status, eventPhoto);
+      const data = await apiRequest(isEditMode ? `/events/${eventId}` : "/events", {
+        method: isEditMode ? "PUT" : "POST",
+        body: JSON.stringify(payload),
+      });
 
-      localStorage.setItem("organizerEvents", JSON.stringify(updatedEvents));
+      const savedEvent = {
+        ...mapBackendEvent(data.event),
+        organizerId: user?.id,
+        organizerEmail: user?.email,
+        organizerName: user?.name,
+      };
+      const nextEvents = isEditMode
+        ? existingEvents.map((event) => (String(event.id) === String(eventId) ? savedEvent : event))
+        : [savedEvent, ...existingEvents];
+
+      localStorage.setItem("organizerEvents", JSON.stringify(nextEvents));
+      setIsSaving(false);
       navigate("/organizer-dashboard");
+      return;
+    } catch (error) {
+      setIsSaving(false);
+      setErrors({ submit: error.message });
       return;
     }
 
-    const newEvent = {
-      id: Date.now(),
-      ...formData,
-      seats: Number(formData.seats),
-      status,
-      organizerId: user?.id,
-      organizerEmail: user?.email,
-      organizerName: user?.name,
-      photo: eventPhoto?.preview || null,
-      photoName: eventPhoto?.name || null,
-      createdAt: new Date().toISOString(),
-    };
-
-    localStorage.setItem("organizerEvents", JSON.stringify([newEvent, ...existingEvents]));
-    navigate("/organizer-dashboard");
   };
 
   if (!isOrganizer) {
@@ -330,9 +395,12 @@ function CreateEvent() {
               </div>
 
               <div className="info-page-form-actions">
-                <button type="button" className="btn btn-outline" onClick={() => saveEvent("Draft")}>Save Draft</button>
-                <button type="button" className="btn btn-primary" onClick={() => saveEvent("Published")}>Publish Event</button>
+                <button type="button" className="btn btn-outline" disabled={isSaving} onClick={() => saveEvent("Draft")}>Save Draft</button>
+                <button type="button" className="btn btn-primary" disabled={isSaving} onClick={() => saveEvent("Published")}>
+                  {isSaving ? "Saving..." : "Publish Event"}
+                </button>
               </div>
+              {errors.submit && <span className="error-message">{errors.submit}</span>}
             </form>
           </div>
         </div>

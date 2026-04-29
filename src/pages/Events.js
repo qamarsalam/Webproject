@@ -11,6 +11,7 @@ function getOrganizerPublishedEvents() {
     .filter((event) => event.status === "Published")
     .map((event) => ({
       id: event.id,
+      eventID: event.eventID || event.id,
       title: event.title,
       description: event.description,
       date: event.date,

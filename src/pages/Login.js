@@ -1,12 +1,13 @@
 import { useContext, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import { apiRequest, saveAuthSession, toFrontendUser } from "../utils/api";
 import "../styles/KUEvents.css";
 import "../styles/Auth.css";
 
 function Login() {
   const { setUser } = useContext(AuthContext);
-  const [role, setRole] = useState("external");
+  const location = useLocation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
@@ -29,19 +30,22 @@ function Login() {
 
     if (Object.keys(newErrors).length === 0) {
       setIsLoading(true);
-      setTimeout(() => {
-        const userId = `${email}`.replace(/[@.]/g, "").substring(0, 20);
-        setUser({ id: userId, role, email, name: email.split("@")[0] });
-        setIsLoading(false);
-        navigate(role === "organizer" ? "/organizer-dashboard" : "/events");
-      }, 1000);
-    }
-  };
 
-  const handleDemoLogin = (demoRole) => {
-    const demoId = `demo-${demoRole}-${Date.now()}`;
-    setUser({ id: demoId, role: demoRole, email: `demo-${demoRole}@ku.edu.kw`, name: `Demo ${demoRole}` });
-    navigate(demoRole === "organizer" ? "/organizer-dashboard" : "/events");
+      try {
+        const data = await apiRequest("/auth/login", {
+          method: "POST",
+          body: JSON.stringify({ email, password }),
+        });
+        const loggedInUser = toFrontendUser(data.user);
+        saveAuthSession(data.token, loggedInUser);
+        setUser(loggedInUser);
+        setIsLoading(false);
+        navigate(loggedInUser.role === "organizer" ? "/organizer-dashboard" : "/events");
+      } catch (error) {
+        setIsLoading(false);
+        setErrors({ submit: error.message });
+      }
+    }
   };
 
   return (
@@ -51,6 +55,9 @@ function Login() {
           <div className="auth-header">
             <h1 className="auth-title">Welcome Back</h1>
             <p className="auth-subtitle">Sign in to your KUEvents account</p>
+            {location.state?.message && (
+              <p className="success-message">{location.state.message}</p>
+            )}
           </div>
 
           <form onSubmit={handleSubmit} className="auth-form">
@@ -84,19 +91,6 @@ function Login() {
               {errors.password && <span className="error-message">{errors.password}</span>}
             </div>
 
-            <div className="form-group">
-              <label className="form-label">Login As</label>
-              <select
-                className="form-select"
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-              >
-                <option value="external">External User</option>
-                <option value="student">KU Student</option>
-                <option value="organizer">Event Organizer</option>
-              </select>
-            </div>
-
             <div className="auth-checkbox">
               <input type="checkbox" id="remember" />
               <label htmlFor="remember">Remember me</label>
@@ -109,28 +103,8 @@ function Login() {
             >
               {isLoading ? "Signing in..." : "Sign In"}
             </button>
+            {errors.submit && <span className="error-message">{errors.submit}</span>}
           </form>
-
-          <div className="auth-divider">
-            <span>Or continue as</span>
-          </div>
-
-          <div className="demo-buttons">
-            <button
-              type="button"
-              className="btn-demo"
-              onClick={() => handleDemoLogin("student")}
-            >
-              Demo Student
-            </button>
-            <button
-              type="button"
-              className="btn-demo"
-              onClick={() => handleDemoLogin("organizer")}
-            >
-              Demo Organizer
-            </button>
-          </div>
 
           <div className="auth-footer">
             <p>

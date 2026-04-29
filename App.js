@@ -1,11 +1,14 @@
-import AppRouter from "./router/AppRouter";
-import { AuthProvider } from "./context/AuthContext";
-import "./styles/KUEvents.css";
+import AppRouter from "./src/router/AppRouter";
+import { AuthProvider } from "./src/context/AuthContext";
+import { RegistrationProvider } from "./src/context/RegistrationContext";
+import "./src/styles/KUEvents.css";
 
 function App() {
   return (
     <AuthProvider>
-      <AppRouter />
+      <RegistrationProvider>
+        <AppRouter />
+      </RegistrationProvider>
     </AuthProvider>
   );
 }

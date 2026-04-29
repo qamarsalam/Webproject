@@ -61,13 +61,12 @@ const registrationSchema = new mongoose.Schema(
 
 registrationSchema.index({ eventID: 1, userID: 1 }, { unique: true });
 
-registrationSchema.pre("save", async function assignRegistrationId(next) {
+registrationSchema.pre("save", async function assignRegistrationId() {
   if (!this.isNew || this.registrationID) {
-    return next();
+    return;
   }
 
   this.registrationID = await Counter.getNextSequence("registrationID");
-  next();
 });
 
 registrationSchema.virtual("event", {
@@ -87,3 +86,4 @@ registrationSchema.virtual("user", {
 module.exports =
   mongoose.models.Registration ||
   mongoose.model("Registration", registrationSchema);
+

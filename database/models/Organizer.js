@@ -57,13 +57,12 @@ const organizerSchema = new mongoose.Schema(
   }
 );
 
-organizerSchema.pre("save", async function assignOrganizerId(next) {
+organizerSchema.pre("save", async function assignOrganizerId() {
   if (!this.isNew || this.organizerID) {
-    return next();
+    return;
   }
 
   this.organizerID = await Counter.getNextSequence("organizerID");
-  next();
 });
 
 organizerSchema.virtual("user", {
@@ -81,3 +80,4 @@ organizerSchema.virtual("events", {
 
 module.exports =
   mongoose.models.Organizer || mongoose.model("Organizer", organizerSchema);
+

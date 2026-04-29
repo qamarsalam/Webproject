@@ -1,4 +1,9 @@
-const bcrypt = require("../../backend/node_modules/bcryptjs");
+let bcrypt;
+try {
+  bcrypt = require("bcryptjs");
+} catch (error) {
+  bcrypt = require("../../backend/node_modules/bcryptjs");
+}
 const { mongoose } = require("../config/db");
 const Counter = require("./Counter");
 
@@ -80,13 +85,6 @@ const userSchema = new mongoose.Schema(
 );
 
 userSchema.pre("validate", function setExternalParticipantRules() {
-  if (this.role === "EXTERNAL_PARTICIPANT" && !this.mobileNumber) {
-    this.invalidate(
-      "mobileNumber",
-      "mobileNumber is required for external participants."
-    );
-  }
-
   if (this.role !== "EXTERNAL_PARTICIPANT" && !this.mobileNumber) {
     this.mobileNumber = null;
   }
@@ -126,3 +124,4 @@ userSchema.virtual("registrations", {
 });
 
 module.exports = mongoose.models.User || mongoose.model("User", userSchema);
+

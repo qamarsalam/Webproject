@@ -1,17 +1,68 @@
 import { useContext, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import { apiRequest } from "../utils/api";
 import "../styles/KUEvents.css";
 import "../styles/AppPages.css";
+
+function toDisplayStatus(status) {
+  return String(status || "").toUpperCase() === "PUBLISHED" ? "Published" : "Draft";
+}
+
+function toDisplayVisibility(visibility) {
+  return String(visibility || "").toUpperCase() === "KU_ONLY" ? "KU Only" : "Public";
+}
+
+function toDateDisplay(value) {
+  if (!value) return "";
+  return String(value).slice(0, 10);
+}
+
+function mapBackendEvent(event, user) {
+  return {
+    id: event.id || event.eventID,
+    eventID: event.eventID || event.id,
+    title: event.title,
+    description: event.description,
+    date: toDateDisplay(event.eventDate),
+    location: event.location,
+    category: event.category,
+    visibility: toDisplayVisibility(event.visibility),
+    seats: event.capacityLimit || "",
+    status: toDisplayStatus(event.status),
+    photo: event.posterURL || null,
+    organizerId: user?.id,
+    organizerEmail: user?.email,
+    organizerName: user?.name,
+    registrations: event.registrations || 0,
+  };
+}
 
 function OrganizerDashboard() {
   const { user } = useContext(AuthContext);
   const [organizerEvents, setOrganizerEvents] = useState([]);
+  const [loadError, setLoadError] = useState("");
 
   useEffect(() => {
-    const events = JSON.parse(localStorage.getItem("organizerEvents") || "[]");
-    setOrganizerEvents(events);
-  }, []);
+    async function loadOrganizerEvents() {
+      const localEvents = JSON.parse(localStorage.getItem("organizerEvents") || "[]");
+
+      try {
+        const data = await apiRequest("/events/mine");
+        const backendEvents = data.events.map((event) => mapBackendEvent(event, user));
+        setOrganizerEvents(backendEvents);
+        localStorage.setItem("organizerEvents", JSON.stringify(backendEvents));
+        setLoadError("");
+      } catch (error) {
+        setOrganizerEvents(localEvents);
+        if (error.message !== "Authentication token is required") {
+          setLoadError(error.message);
+        }
+      }
+    }
+
+    loadOrganizerEvents();
+  }, [user]);
 
   const visibleOrganizerEvents = useMemo(() => {
     if (!user?.email && !user?.id) return [];
@@ -26,10 +77,19 @@ function OrganizerDashboard() {
     0
   );
 
-  const handleDeleteEvent = (eventId) => {
+  const handleDeleteEvent = async (eventId) => {
     const shouldDelete = window.confirm("Delete this event? This action cannot be undone.");
 
     if (!shouldDelete) return;
+
+    try {
+      await apiRequest(`/events/${eventId}`, { method: "DELETE" });
+    } catch (error) {
+      if (error.message !== "Authentication token is required") {
+        setLoadError(error.message);
+        return;
+      }
+    }
 
     const updatedEvents = organizerEvents.filter((event) => event.id !== eventId);
     setOrganizerEvents(updatedEvents);
@@ -118,6 +178,7 @@ function OrganizerDashboard() {
 
         <main className="organizer-dashboard-main">
           <h2>Your Events</h2>
+          {loadError && <p className="error-message">{loadError}</p>}
 
           <div className="organizer-events-table" role="table" aria-label="Organizer events">
             <div className="organizer-events-row organizer-events-header" role="row">

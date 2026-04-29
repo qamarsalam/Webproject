@@ -114,21 +114,18 @@ const eventSchema = new mongoose.Schema(
   }
 );
 
-eventSchema.pre("validate", function enforceCapacityRules(next) {
+eventSchema.pre("validate", function enforceCapacityRules() {
   if (!this.registrationRequired) {
     this.capacityLimit = null;
   }
-
-  next();
 });
 
-eventSchema.pre("save", async function assignEventId(next) {
+eventSchema.pre("save", async function assignEventId() {
   if (!this.isNew || this.eventID) {
-    return next();
+    return;
   }
 
   this.eventID = await Counter.getNextSequence("eventID");
-  next();
 });
 
 eventSchema.virtual("organizer", {
@@ -145,3 +142,4 @@ eventSchema.virtual("registrations", {
 });
 
 module.exports = mongoose.models.Event || mongoose.model("Event", eventSchema);
+

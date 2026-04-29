@@ -6,7 +6,10 @@ export const AuthContext = createContext({
 });
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState({ role: "external" });
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem("kuEventsUser");
+    return savedUser ? JSON.parse(savedUser) : { role: "external" };
+  });
 
   return (
     <AuthContext.Provider value={{ user, setUser }}>

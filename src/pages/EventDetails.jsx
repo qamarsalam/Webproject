@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import events from "../data/events";
 import { AuthContext } from "../context/AuthContext";
 import { RegistrationContext } from "../context/RegistrationContext";
+import { apiRequest } from "../utils/api";
 import "../styles/AppPages.css";
 
 const eventDetails = {
@@ -21,6 +22,7 @@ function getOrganizerPublishedEvents() {
     .filter((event) => event.status === "Published")
     .map((event) => ({
       id: event.id,
+      eventID: event.eventID || event.id,
       title: event.title,
       description: event.description,
       date: event.date,
@@ -58,7 +60,7 @@ function EventDetails() {
     .map((paragraph) => paragraph.trim())
     .filter(Boolean);
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     if (!user || !user.id) {
       setRegistrationMessage("Please log in to register for this event");
       return;
@@ -72,6 +74,18 @@ function EventDetails() {
     if (availableSeats <= 0) {
       setRegistrationMessage("Sorry, this event is full");
       return;
+    }
+
+    if (event.isOrganizerCreated) {
+      try {
+        await apiRequest("/registrations", {
+          method: "POST",
+          body: JSON.stringify({ eventID: event.eventID || event.id }),
+        });
+      } catch (error) {
+        setRegistrationMessage(error.message);
+        return;
+      }
     }
 
     registerUser(event.id, user.id, event.seats);

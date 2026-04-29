@@ -1,6 +1,7 @@
 import { useContext, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import { apiRequest, normalizeBackendRole } from "../utils/api";
 import "../styles/KUEvents.css";
 import "../styles/Auth.css";
 
@@ -14,6 +15,8 @@ function Register() {
     confirmPassword: "",
     role: "student",
     college: "",
+    organizationName: "",
+    organizationDescription: "",
     agreeTerms: false,
   });
   const [errors, setErrors] = useState({});
@@ -47,6 +50,12 @@ function Register() {
     if (formData.role === "student" && !formData.college) {
       newErrors.college = "Please select your college";
     }
+    if (formData.role === "organizer" && !formData.organizationName.trim()) {
+      newErrors.organizationName = "Organization name is required";
+    }
+    if (formData.role === "organizer" && !formData.organizationDescription.trim()) {
+      newErrors.organizationDescription = "Organization description is required";
+    }
     if (!formData.agreeTerms) newErrors.agreeTerms = "You must agree to the terms";
     return newErrors;
   };
@@ -67,18 +76,43 @@ function Register() {
 
     if (Object.keys(newErrors).length === 0) {
       setIsLoading(true);
-      setTimeout(() => {
-        const userId = `${formData.email}`.replace(/[@.]/g, "").substring(0, 20);
-        setUser({
-          id: userId,
-          role: formData.role,
-          email: formData.email,
-          name: formData.fullName,
-          college: formData.college,
+
+      try {
+        const data = await apiRequest("/auth/register", {
+          method: "POST",
+          body: JSON.stringify({
+            name: formData.fullName,
+            email: formData.email,
+            password: formData.password,
+            role: normalizeBackendRole(formData.role),
+          }),
         });
+
+        if (formData.role === "organizer") {
+          await apiRequest("/organizers/me", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${data.token}`,
+            },
+            body: JSON.stringify({
+              organizationName: formData.organizationName,
+              organizationType: "STUDENT_CLUB",
+              description: formData.organizationDescription,
+            }),
+          });
+        }
+
+        localStorage.removeItem("kuEventsToken");
+        localStorage.removeItem("kuEventsUser");
+        setUser({ role: "external" });
         setIsLoading(false);
-        navigate("/events");
-      }, 1500);
+        navigate("/login", {
+          state: { message: "Account created successfully. Please log in." },
+        });
+      } catch (error) {
+        setIsLoading(false);
+        setErrors({ submit: error.message });
+      }
     }
   };
 
@@ -139,7 +173,17 @@ function Register() {
                     checked={formData.role === "external"}
                     onChange={handleChange}
                   />
-                  <span>External</span>
+                  <span>External Participant (Public User)</span>
+                </label>
+                <label className={`role-option ${formData.role === "organizer" ? "active" : ""}`}>
+                  <input
+                    type="radio"
+                    name="role"
+                    value="organizer"
+                    checked={formData.role === "organizer"}
+                    onChange={handleChange}
+                  />
+                  <span>Organizer</span>
                 </label>
               </div>
             </div>
@@ -162,6 +206,36 @@ function Register() {
                 </select>
                 {errors.college && <span className="error-message">{errors.college}</span>}
               </div>
+            )}
+
+            {formData.role === "organizer" && (
+              <>
+                <div className="form-group">
+                  <label className="form-label">Organization Name</label>
+                  <input
+                    type="text"
+                    name="organizationName"
+                    className={`form-input ${errors.organizationName ? "input-error" : ""}`}
+                    placeholder="Computer Science Club"
+                    value={formData.organizationName}
+                    onChange={handleChange}
+                  />
+                  {errors.organizationName && <span className="error-message">{errors.organizationName}</span>}
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Organization Description</label>
+                  <textarea
+                    name="organizationDescription"
+                    className={`form-input form-textarea ${errors.organizationDescription ? "input-error" : ""}`}
+                    placeholder="Tell us what kind of events your organization will create."
+                    value={formData.organizationDescription}
+                    onChange={handleChange}
+                    rows={4}
+                  />
+                  {errors.organizationDescription && <span className="error-message">{errors.organizationDescription}</span>}
+                </div>
+              </>
             )}
 
             <div className="form-group">
@@ -221,6 +295,7 @@ function Register() {
             >
               {isLoading ? "Creating Account..." : "Create Account"}
             </button>
+            {errors.submit && <span className="error-message">{errors.submit}</span>}
           </form>
 
           <div className="auth-footer">
