@@ -1,15 +1,19 @@
 import { useContext, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import { getAuthToken } from "../utils/api";
 import "../styles/Navbar.css";
 
 function Navbar() {
   const { user, setUser } = useContext(AuthContext);
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const isLoggedIn = Boolean(getAuthToken() && user?.id);
 
   const handleLogout = () => {
-    setUser({ id: null, role: "external" });
+    localStorage.removeItem("kuEventsToken");
+    localStorage.removeItem("kuEventsUser");
+    setUser({ role: "external" });
     setIsMenuOpen(false);
     navigate("/login");
   };
@@ -52,7 +56,7 @@ function Navbar() {
         </div>
 
         <div className="navbar-auth">
-          {user?.role === "external" || !user ? (
+          {!isLoggedIn ? (
             <>
               <NavLink to="/login" className={(navState) => authLinkClassName(navState, "outline")} onClick={closeMenu}>
                 Login
