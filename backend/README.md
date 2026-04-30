@@ -37,3 +37,16 @@ Expected response:
   "timestamp": "..."
 }
 ```
+
+## Structure
+
+```text
+controllers/  Request handling and response logic
+models/       Mongoose schemas and model helpers
+routes/       API endpoint definitions
+middleware/   Shared Express middleware
+config/       Database connection
+setup/        Database initialization and sample data
+```
+
+Routes stay intentionally small: they define the URL, middleware, and controller function.

@@ -1,4 +1,4 @@
-const Organizer = require("../../database/models/Organizer");
+const Organizer = require("../models/Organizer");
 
 function normalizeOrganizationType(value) {
   if (!value) return "STUDENT_CLUB";

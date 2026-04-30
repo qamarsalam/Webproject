@@ -10,18 +10,8 @@ const { authenticateToken, authorizeRoles } = require("../middleware/authMiddlew
 const router = express.Router();
 
 router.get("/", authenticateToken, authorizeRoles("ADMIN"), getOrganizers);
-router.get(
-  "/me",
-  authenticateToken,
-  authorizeRoles("ORGANIZER", "ADMIN"),
-  getMyOrganizerProfile
-);
-router.post(
-  "/me",
-  authenticateToken,
-  authorizeRoles("ORGANIZER", "ADMIN"),
-  saveMyOrganizerProfile
-);
+router.get("/me", authenticateToken, authorizeRoles("ORGANIZER", "ADMIN"), getMyOrganizerProfile);
+router.post("/me", authenticateToken, authorizeRoles("ORGANIZER", "ADMIN"), saveMyOrganizerProfile);
 router.get("/:id", getOrganizerById);
 
 module.exports = router;

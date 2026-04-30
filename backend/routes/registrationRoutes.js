@@ -17,6 +17,7 @@ router.get(
   authorizeRoles("ORGANIZER", "ADMIN"),
   getEventRegistrations
 );
+
 router.post("/", authenticateToken, createRegistration);
 router.delete("/event/:eventId/my", authenticateToken, cancelMyEventRegistration);
 router.delete("/:id", authenticateToken, cancelRegistration);

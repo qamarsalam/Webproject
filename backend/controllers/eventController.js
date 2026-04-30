@@ -1,6 +1,6 @@
-const Event = require("../../database/models/Event");
-const Organizer = require("../../database/models/Organizer");
-const Registration = require("../../database/models/Registration");
+const Event = require("../models/Event");
+const Organizer = require("../models/Organizer");
+const Registration = require("../models/Registration");
 
 function normalizeVisibility(value) {
   if (!value) return "PUBLIC";
@@ -10,6 +10,18 @@ function normalizeVisibility(value) {
 function normalizeStatus(value) {
   if (!value) return "PUBLISHED";
   return String(value).trim().replace(/[\s-]+/g, "_").toUpperCase();
+}
+
+function parseBoolean(value) {
+  if (typeof value === "boolean") {
+    return value;
+  }
+
+  if (typeof value === "string") {
+    return value.trim().toLowerCase() === "true";
+  }
+
+  return Boolean(value);
 }
 
 function serializeEvent(event, registrationCount = 0) {
@@ -59,7 +71,7 @@ function buildEventPayload(body, organizerID) {
     status: normalizeStatus(body.status),
     posterURL: body.posterURL || body.photoURL || null,
     speakerInfo: body.speakerInfo || null,
-    registrationRequired: Boolean(body.registrationRequired),
+    registrationRequired: parseBoolean(body.registrationRequired),
     capacityLimit: body.capacityLimit || body.seats || null,
   };
 }

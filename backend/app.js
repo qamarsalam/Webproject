@@ -4,8 +4,7 @@ const authRoutes = require("./routes/authRoutes");
 const eventRoutes = require("./routes/eventRoutes");
 const organizerRoutes = require("./routes/organizerRoutes");
 const registrationRoutes = require("./routes/registrationRoutes");
-const healthRoutes = require("./routes/healthRoutes");// is just a small test route
-//later i will add more routes for users, events, etc. but for now this is just to test the server is working and can connect to the database.
+const healthRoutes = require("./routes/healthRoutes");
 
 const app = express();
 
@@ -16,7 +15,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/organizers", organizerRoutes);
 app.use("/api/registrations", registrationRoutes);
-app.use("/api/health", healthRoutes);//craetes this endpoint
+app.use("/api/health", healthRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });

@@ -1,6 +1,6 @@
-const { connectToDatabase, disconnectFromDatabase, mongoose } = require("./config/db");
-const models = require("./models");
-const initializeDatabase = require("./setup/initializeDatabase");
+const { connectToDatabase, disconnectFromDatabase, mongoose } = require("../backend/config/db");
+const models = require("../backend/models");
+const initializeDatabase = require("../backend/setup/initializeDatabase");
 
 module.exports = {
   connectToDatabase,

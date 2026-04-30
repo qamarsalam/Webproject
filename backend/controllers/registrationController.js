@@ -1,6 +1,6 @@
-const Event = require("../../database/models/Event");
-const Organizer = require("../../database/models/Organizer");
-const Registration = require("../../database/models/Registration");
+const Event = require("../models/Event");
+const Organizer = require("../models/Organizer");
+const Registration = require("../models/Registration");
 
 function serializeRegistration(registration, event = null) {
   return {
