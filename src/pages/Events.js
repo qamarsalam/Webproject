@@ -65,6 +65,29 @@ function getOrganizerPublishedEvents() {
     }));
 }
 
+function getEventKey(event) {
+  if (event.eventID || event.id) {
+    return String(event.eventID || event.id);
+  }
+
+  return `${event.title}-${event.date}-${event.location}`.toLowerCase();
+}
+
+function getUniqueEvents(eventList) {
+  const seenEvents = new Set();
+
+  return eventList.filter((event) => {
+    const eventKey = getEventKey(event);
+
+    if (seenEvents.has(eventKey)) {
+      return false;
+    }
+
+    seenEvents.add(eventKey);
+    return true;
+  });
+}
+
 function Events() {
   const { user } = useContext(AuthContext);
   const [search, setSearch] = useState("");
@@ -89,8 +112,11 @@ function Events() {
   const visibleEvents = useMemo(() => {
     const allEvents =
       databaseEvents.length > 0
-        ? databaseEvents
-        : [...events.filter((event) => event.id), ...getOrganizerPublishedEvents()];
+        ? getUniqueEvents(databaseEvents)
+        : getUniqueEvents([
+            ...events.filter((event) => event.id),
+            ...getOrganizerPublishedEvents(),
+          ]);
 
     return allEvents.filter((event) => {
       const matchesRole =

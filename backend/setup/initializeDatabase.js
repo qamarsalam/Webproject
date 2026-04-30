@@ -35,6 +35,17 @@ const sampleUsers = [
     isActive: true,
     createdAt: new Date("2026-03-03T09:30:00"),
   },
+  {
+    userID: 4,
+    name: "Admin",
+    email: "admin@ku.edu.kw",
+    password: "admin123",
+    role: "ADMIN",
+    mobileNumber: null,
+    isAuthorized: true,
+    isActive: true,
+    createdAt: new Date("2026-03-04T09:30:00"),
+  },
 ];
 
 const sampleOrganizers = [
@@ -149,7 +160,7 @@ async function seedMilestoneThreeData() {
   await Promise.all([
     Counter.updateOne(
       { _id: "userID" },
-      { $max: { sequenceValue: 3 } },
+      { $max: { sequenceValue: 4 } },
       { upsert: true }
     ),
     Counter.updateOne(

@@ -70,7 +70,7 @@ function CreateEvent() {
   const [errors, setErrors] = useState({});
   const [isSaving, setIsSaving] = useState(false);
 
-  const isOrganizer = user?.role === "organizer";
+  const canCreateEvent = user?.role === "organizer" || user?.role === "admin";
   const isEditMode = Boolean(eventId);
 
   useEffect(() => {
@@ -207,7 +207,7 @@ function CreateEvent() {
 
   };
 
-  if (!isOrganizer) {
+  if (!canCreateEvent) {
     return (
       <div className="info-page-shell">
         <section className="info-page-hero info-page-hero-create">
@@ -216,7 +216,7 @@ function CreateEvent() {
               <span className="badge badge-gold">Organizer Access</span>
               <h1 className="info-page-title">Sign in as an organizer to create events.</h1>
               <p className="info-page-text">
-                Event creation is available only for approved organizers. For now, organizer requests are approved directly so you can test the flow.
+                Event creation is available only for organizers and admins.
               </p>
               <div className="app-page-actions">
                 <Link to="/login" className="btn btn-primary">Login as Organizer</Link>

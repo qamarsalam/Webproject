@@ -16,11 +16,39 @@ function Login() {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!email.trim()) newErrors.email = "Email is required";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) newErrors.email = "Please enter a valid email";
-    if (!password) newErrors.password = "Password is required";
-    if (password.length < 6) newErrors.password = "Password must be at least 6 characters";
+    if (!email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      newErrors.email = "Please enter a valid email";
+    }
+
+    if (!password) {
+      newErrors.password = "Password is required";
+    } else if (password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
+    }
+
     return newErrors;
+  };
+
+  const getLoginErrors = (message) => {
+    const lowerMessage = message.toLowerCase();
+
+    if (lowerMessage.includes("email")) {
+      return { email: "Invalid email" };
+    }
+
+    if (lowerMessage.includes("password")) {
+      return { password: "Invalid password" };
+    }
+
+    return { password: "Invalid password" };
+  };
+
+  const getRedirectPath = (role) => {
+    if (role === "admin") return "/admin";
+    if (role === "organizer") return "/organizer-dashboard";
+    return "/events";
   };
 
   const handleSubmit = async (e) => {
@@ -40,10 +68,10 @@ function Login() {
         saveAuthSession(data.token, loggedInUser);
         setUser(loggedInUser);
         setIsLoading(false);
-        navigate(loggedInUser.role === "organizer" ? "/organizer-dashboard" : "/events");
+        navigate(getRedirectPath(loggedInUser.role));
       } catch (error) {
         setIsLoading(false);
-        setErrors({ submit: error.message });
+        setErrors(getLoginErrors(error.message));
       }
     }
   };
@@ -70,7 +98,7 @@ function Login() {
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
-                  if (errors.email) setErrors({ ...errors, email: "" });
+                  if (errors.email || errors.submit) setErrors({ ...errors, email: "", submit: "" });
                 }}
               />
               {errors.email && <span className="error-message">{errors.email}</span>}
@@ -85,7 +113,7 @@ function Login() {
                 value={password}
                 onChange={(e) => {
                   setPassword(e.target.value);
-                  if (errors.password) setErrors({ ...errors, password: "" });
+                  if (errors.password || errors.submit) setErrors({ ...errors, password: "", submit: "" });
                 }}
               />
               {errors.password && <span className="error-message">{errors.password}</span>}

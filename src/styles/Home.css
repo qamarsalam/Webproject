@@ -422,29 +422,6 @@
   }
 }
 
-.event-card {
-  background: #eee;
-  padding: 20px;
-  border-radius: 10px;
-  width: 250px;
-  position: relative;
-}
-
-.event-image {
-  height: 120px;
-  background: #ccc;
-}
-
-.tag {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: gray;
-  color: white;
-  padding: 5px;
-  border-radius: 8px;
-}
-
 /* footer */
 .footer {
   background: #2c3e50;

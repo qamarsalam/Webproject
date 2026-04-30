@@ -36,12 +36,14 @@ function Register() {
   const validateForm = () => {
     const newErrors = {};
     if (!formData.fullName.trim()) newErrors.fullName = "Full name is required";
-    if (!formData.email.trim()) newErrors.email = "Email is required";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = "Please enter a valid email";
     }
-    if (!formData.password) newErrors.password = "Password is required";
-    if (formData.password.length < 8) {
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+    } else if (formData.password.length < 8) {
       newErrors.password = "Password must be at least 8 characters";
     }
     if (formData.password !== formData.confirmPassword) {
@@ -60,13 +62,35 @@ function Register() {
     return newErrors;
   };
 
+  const getRegisterErrors = (message) => {
+    const lowerMessage = message.toLowerCase();
+
+    if (lowerMessage.includes("already") || lowerMessage.includes("exists") || lowerMessage.includes("email")) {
+      return { email: message };
+    }
+
+    if (lowerMessage.includes("password")) {
+      return { password: message };
+    }
+
+    if (lowerMessage.includes("name")) {
+      return { fullName: message };
+    }
+
+    if (lowerMessage.includes("organization")) {
+      return { organizationName: message };
+    }
+
+    return { email: message };
+  };
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
       [name]: type === "checkbox" ? checked : value,
     });
-    if (errors[name]) setErrors({ ...errors, [name]: "" });
+    if (errors[name] || errors.submit) setErrors({ ...errors, [name]: "", submit: "" });
   };
 
   const handleSubmit = async (e) => {
@@ -111,7 +135,7 @@ function Register() {
         });
       } catch (error) {
         setIsLoading(false);
-        setErrors({ submit: error.message });
+        setErrors(getRegisterErrors(error.message));
       }
     }
   };

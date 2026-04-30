@@ -9,6 +9,7 @@ function Navbar() {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const isLoggedIn = Boolean(getAuthToken() && user?.id);
+  const canCreateEvent = user?.role === "organizer" || user?.role === "admin";
 
   const handleLogout = () => {
     localStorage.removeItem("kuEventsToken");
@@ -47,9 +48,16 @@ function Navbar() {
               Organizer Dashboard
             </NavLink>
           )}
-          <NavLink to="/create-event" className={linkClassName} onClick={closeMenu}>
-            Create Event
-          </NavLink>
+          {user?.role === "admin" && (
+            <NavLink to="/admin" className={linkClassName} onClick={closeMenu}>
+              Admin Dashboard
+            </NavLink>
+          )}
+          {canCreateEvent && (
+            <NavLink to="/create-event" className={linkClassName} onClick={closeMenu}>
+              Create Event
+            </NavLink>
+          )}
           <NavLink to="/contact" className={linkClassName} onClick={closeMenu}>
             Contact
           </NavLink>

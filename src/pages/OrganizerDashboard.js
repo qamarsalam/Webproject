@@ -51,7 +51,6 @@ function OrganizerDashboard() {
         const data = await apiRequest("/events/mine");
         const backendEvents = data.events.map((event) => mapBackendEvent(event, user));
         setOrganizerEvents(backendEvents);
-        localStorage.setItem("organizerEvents", JSON.stringify(backendEvents));
         setLoadError("");
       } catch (error) {
         setOrganizerEvents(localEvents);

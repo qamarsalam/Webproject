@@ -86,11 +86,12 @@ function getDescriptionPreview(description) {
 
 function EventDetails() {
   const { user } = useContext(AuthContext);
-  const { registerUser, isUserRegistered, getAvailableSeats } = useContext(RegistrationContext);
+  const { registerUser, unregisterUser, isUserRegistered, getAvailableSeats } = useContext(RegistrationContext);
   const { id } = useParams();
   const [databaseEvent, setDatabaseEvent] = useState(null);
   const [isLoadingEvent, setIsLoadingEvent] = useState(true);
   const [registrationMessage, setRegistrationMessage] = useState("");
+  const [showRegistrationModal, setShowRegistrationModal] = useState(false);
 
   useEffect(() => {
     async function loadEvent() {
@@ -152,8 +153,48 @@ function EventDetails() {
     }
 
     registerUser(event.id, user.id, event.seats);
+    setShowRegistrationModal(true);
     setRegistrationMessage(`Successfully registered! ${availableSeats - 1} seats remaining`);
   };
+
+  const handleCancelRegistration = async () => {
+    if (!user || !user.id) {
+      setRegistrationMessage("Please log in to cancel your registration");
+      return;
+    }
+
+    if (!isRegistered) {
+      setRegistrationMessage("You are not registered for this event");
+      return;
+    }
+
+    if (event.isDatabaseEvent || event.isOrganizerCreated) {
+      try {
+        await apiRequest(`/registrations/event/${event.eventID || event.id}/my`, {
+          method: "DELETE",
+        });
+      } catch (error) {
+        setRegistrationMessage(error.message);
+        return;
+      }
+    }
+
+    unregisterUser(event.id, user.id);
+    setRegistrationMessage(`Registration cancelled. ${availableSeats + 1} seats available`);
+  };
+
+  const handleRegistrationButtonClick = () => {
+    if (isRegistered) {
+      handleCancelRegistration();
+      return;
+    }
+
+    handleRegister();
+  };
+
+  const isSuccessMessage =
+    registrationMessage.includes("Successfully") ||
+    registrationMessage.includes("cancelled");
 
   if (isLoadingEvent) {
     return (
@@ -250,21 +291,46 @@ function EventDetails() {
               </div>
             </div>
             <button
-              className={`btn ${isRegistered || availableSeats === 0 ? "btn-secondary" : "btn-primary"}`}
-              onClick={handleRegister}
-              disabled={isRegistered || availableSeats === 0}
+              className={`btn ${isRegistered ? "btn-danger" : availableSeats === 0 ? "btn-secondary" : "btn-primary"}`}
+              onClick={handleRegistrationButtonClick}
+              disabled={!isRegistered && availableSeats === 0}
               style={{ width: "100%", marginTop: "20px" }}
             >
-              {isRegistered ? "Already Registered" : availableSeats === 0 ? "Event Full" : "Register for Event"}
+              {isRegistered ? "Cancel Registration" : availableSeats === 0 ? "Event Full" : "Register for Event"}
             </button>
             {registrationMessage && (
-              <p style={{ marginTop: "12px", fontSize: "14px", color: registrationMessage.includes("Successfully") ? "#10b981" : "#ef4444", textAlign: "center" }}>
+              <p style={{ marginTop: "12px", fontSize: "14px", color: isSuccessMessage ? "#10b981" : "#ef4444", textAlign: "center" }}>
                 {registrationMessage}
               </p>
             )}
           </div>
         </div>
       </section>
+
+      {showRegistrationModal && (
+        <div className="registration-modal-backdrop" role="presentation">
+          <div className="registration-modal" role="dialog" aria-modal="true" aria-labelledby="registration-modal-title">
+            <button
+              type="button"
+              className="registration-modal-close"
+              aria-label="Close registration confirmation"
+              onClick={() => setShowRegistrationModal(false)}
+            >
+              x
+            </button>
+            <div className="registration-modal-icon">✓</div>
+            <h2 id="registration-modal-title">Registered Successfully</h2>
+            <p>You are now registered for this event.</p>
+            <button
+              type="button"
+              className="btn btn-primary btn-sm"
+              onClick={() => setShowRegistrationModal(false)}
+            >
+              Continue
+            </button>
+          </div>
+        </div>
+      )}
 
       <section className="app-page-content-section">
         <div className="container app-detail-grid">

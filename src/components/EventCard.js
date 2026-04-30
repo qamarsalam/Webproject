@@ -54,15 +54,19 @@ function EventCard({ event }) {
 
   return (
     <div className="event-card card">
-      {event.image && (
-        <div className="event-card-image-wrap">
+      <div className="event-card-image-wrap">
+        {event.image ? (
           <img
             src={event.image}
             alt={event.title}
             className="event-card-image"
           />
-        </div>
-      )}
+        ) : (
+          <div className="event-card-image-placeholder" aria-hidden="true">
+            <span>{event.category || "KU Event"}</span>
+          </div>
+        )}
+      </div>
 
       <div className="event-header">
         <h3 className="event-title">{event.title}</h3>
