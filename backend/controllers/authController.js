@@ -20,7 +20,6 @@ function serializeUser(user) {
     name: user.name,
     email: user.email,
     role: user.role,
-    mobileNumber: user.mobileNumber,
     isAuthorized: user.isAuthorized,
     isActive: user.isActive,
   };
@@ -28,7 +27,7 @@ function serializeUser(user) {
 
 async function register(req, res, next) {
   try {
-    const { name, email, password, role, mobileNumber } = req.body;
+    const { name, email, password, role } = req.body;
 
     if (!name || !email || !password || !role) {
       return res.status(400).json({
@@ -46,7 +45,6 @@ async function register(req, res, next) {
       email,
       password,
       role,
-      mobileNumber,
     });
 
     const token = createToken(user);

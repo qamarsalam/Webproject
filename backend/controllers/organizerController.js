@@ -1,17 +1,11 @@
 const Organizer = require("../models/Organizer");
 
-function normalizeOrganizationType(value) {
-  if (!value) return "STUDENT_CLUB";
-  return String(value).trim().replace(/[\s-]+/g, "_").toUpperCase();
-}
-
 function serializeOrganizer(organizer) {
   return {
     id: organizer.organizerID,
     organizerID: organizer.organizerID,
     userID: organizer.userID,
     organizationName: organizer.organizationName,
-    organizationType: organizer.organizationType,
     description: organizer.description,
   };
 }
@@ -43,7 +37,6 @@ async function saveMyOrganizerProfile(req, res, next) {
   try {
     const payload = {
       organizationName: req.body.organizationName,
-      organizationType: normalizeOrganizationType(req.body.organizationType),
       description: req.body.description,
     };
 

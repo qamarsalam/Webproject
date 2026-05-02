@@ -50,11 +50,6 @@ const userSchema = new mongoose.Schema(
       trim: true,
       set: normalizeRole,
     },
-    mobileNumber: {
-      type: String,
-      default: null,
-      trim: true,
-    },
     isAuthorized: {
       type: Boolean,
       required: true,
@@ -78,12 +73,6 @@ const userSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
-
-userSchema.pre("validate", function cleanMobileNumber() {
-  if (this.role !== "EXTERNAL_PARTICIPANT" && !this.mobileNumber) {
-    this.mobileNumber = null;
-  }
-});
 
 userSchema.pre("save", async function assignUserId() {
   if (!this.isNew || this.userID) {

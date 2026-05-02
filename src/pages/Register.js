@@ -120,7 +120,6 @@ function Register() {
             },
             body: JSON.stringify({
               organizationName: formData.organizationName,
-              organizationType: "STUDENT_CLUB",
               description: formData.organizationDescription,
             }),
           });
