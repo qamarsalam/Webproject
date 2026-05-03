@@ -311,7 +311,128 @@
   overflow-wrap: anywhere;
 }
 
+.contact-replies-panel {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.contact-replies-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: end;
+  margin-bottom: 22px;
+}
+
+.contact-account-email {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 48px;
+  padding: 12px 14px;
+  border: 1px solid rgba(30, 58, 138, 0.14);
+  border-radius: 8px;
+  background: #f8fbff;
+}
+
+.contact-account-email strong {
+  color: var(--primary-blue);
+  font-size: 14px;
+}
+
+.contact-account-email span {
+  color: #64748b;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.contact-replies-empty {
+  margin: 0;
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+.contact-replies-list {
+  display: grid;
+  gap: 16px;
+}
+
+.contact-reply-card {
+  padding: 18px;
+  border: 1px solid rgba(30, 58, 138, 0.12);
+  border-radius: 8px;
+  background: #f8fbff;
+}
+
+.contact-reply-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.contact-reply-header h3 {
+  margin: 0 0 4px;
+  color: var(--primary-blue);
+  font-size: 18px;
+}
+
+.contact-reply-header small,
+.contact-reply-response small {
+  color: #64748b;
+}
+
+.contact-reply-status {
+  align-self: flex-start;
+  padding: 5px 11px;
+  border-radius: 999px;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.contact-reply-status.unread {
+  background: #f59e0b;
+}
+
+.contact-reply-status.read {
+  background: #3b82f6;
+}
+
+.contact-reply-status.responded {
+  background: #10b981;
+}
+
+.contact-reply-message,
+.contact-reply-response {
+  padding: 14px;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.contact-reply-response {
+  margin-top: 12px;
+  background: rgba(16, 185, 129, 0.08);
+}
+
+.contact-reply-message strong,
+.contact-reply-response strong {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--primary-blue);
+}
+
+.contact-reply-message p,
+.contact-reply-response p {
+  margin: 0;
+  color: #334155;
+  line-height: 1.65;
+}
+
 @media (max-width: 520px) {
+  .contact-replies-toolbar,
   .event-photo-preview {
     grid-template-columns: 1fr;
   }

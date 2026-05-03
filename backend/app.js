@@ -4,6 +4,7 @@ const authRoutes = require("./routes/authRoutes");
 const eventRoutes = require("./routes/eventRoutes");
 const organizerRoutes = require("./routes/organizerRoutes");
 const registrationRoutes = require("./routes/registrationRoutes");
+const contactRoutes = require("./routes/contactRoutes");
 const healthRoutes = require("./routes/healthRoutes");
 
 const app = express();
@@ -15,6 +16,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/organizers", organizerRoutes);
 app.use("/api/registrations", registrationRoutes);
+app.use("/api/contact", contactRoutes);
 app.use("/api/health", healthRoutes);
 
 app.use((req, res) => {

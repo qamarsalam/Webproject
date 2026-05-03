@@ -58,9 +58,11 @@ function Navbar() {
               Create Event
             </NavLink>
           )}
-          <NavLink to="/contact" className={linkClassName} onClick={closeMenu}>
-            Contact
-          </NavLink>
+          {user?.role !== "admin" && (
+            <NavLink to="/contact" className={linkClassName} onClick={closeMenu}>
+              Contact
+            </NavLink>
+          )}
         </div>
 
         <div className="navbar-auth">
