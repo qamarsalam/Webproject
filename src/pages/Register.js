@@ -40,6 +40,8 @@ function Register() {
       newErrors.email = "Email is required";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = "Please enter a valid email";
+    } else if (formData.role !== "external" && !formData.email.trim().toLowerCase().endsWith("@ku.edu.kw")) {
+      newErrors.email = "KU users must use an email ending with @ku.edu.kw";
     }
     if (!formData.password) {
       newErrors.password = "Password is required";

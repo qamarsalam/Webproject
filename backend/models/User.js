@@ -9,6 +9,8 @@ const USER_ROLES = [
   "STAFF",
   "EXTERNAL_PARTICIPANT",
 ];
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const KU_EMAIL_ROLES = ["ADMIN", "ORGANIZER", "STUDENT", "STAFF"];
 
 function normalizeRole(value) {
   if (typeof value !== "string") {
@@ -16,6 +18,10 @@ function normalizeRole(value) {
   }
 
   return value.trim().replace(/[\s-]+/g, "_").toUpperCase();
+}
+
+function isKuEmailRequired(role) {
+  return KU_EMAIL_ROLES.includes(normalizeRole(role));
 }
 
 const userSchema = new mongoose.Schema(
@@ -37,6 +43,18 @@ const userSchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
       trim: true,
+      validate: [
+        {
+          validator: (value) => EMAIL_PATTERN.test(value),
+          message: "Please enter a valid email",
+        },
+        {
+          validator: function validateKuEmail(value) {
+            return !isKuEmailRequired(this.role) || value.endsWith("@ku.edu.kw");
+          },
+          message: "KU users must use an email ending with @ku.edu.kw",
+        },
+      ],
     },
     password: {
       type: String,
