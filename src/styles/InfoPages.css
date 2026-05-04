@@ -169,6 +169,10 @@
   padding: 0 0 84px;
 }
 
+.info-page-hero + .info-page-support {
+  padding-top: 48px;
+}
+
 .info-page-support-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -230,6 +234,10 @@
 
   .info-page-support {
     padding-bottom: 60px;
+  }
+
+  .info-page-hero + .info-page-support {
+    padding-top: 36px;
   }
 }
 
