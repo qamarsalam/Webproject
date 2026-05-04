@@ -15,7 +15,7 @@
 }
 
 .event-card-image-wrap {
-    width: 100%;
+    width: calc(100% + 36px);
     overflow: hidden;
     margin: -18px -18px 2px;
     border-radius: 8px 8px 0 0;
@@ -168,6 +168,7 @@
     }
 
     .event-card-image-wrap {
+        width: calc(100% + 32px);
         margin: -16px -16px 0;
     }
 
