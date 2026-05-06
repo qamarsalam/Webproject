@@ -46,6 +46,20 @@ async function countActiveRegistrations(eventID) {
   });
 }
 
+function getEventEndDate(event) {
+  const eventDate = new Date(event.eventDate);
+  const [hours = 23, minutes = 59] = String(event.endTime || "23:59")
+    .split(":")
+    .map(Number);
+
+  eventDate.setHours(hours, minutes, 59, 999);
+  return eventDate;
+}
+
+function hasEventEnded(event) {
+  return getEventEndDate(event) < new Date();
+}
+
 async function getMyRegistrations(req, res, next) {
   try {
     const registrations = await Registration.find({ userID: req.user.id }).sort({
@@ -111,6 +125,10 @@ async function createRegistration(req, res, next) {
 
     if (!event || event.status !== "PUBLISHED") {
       return res.status(404).json({ message: "Published event not found" });
+    }
+
+    if (hasEventEnded(event)) {
+      return res.status(409).json({ message: "Registration is closed because this event has ended" });
     }
 
     if (req.user.role === "EXTERNAL_PARTICIPANT" && event.visibility !== "PUBLIC") {

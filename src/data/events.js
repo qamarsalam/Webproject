@@ -3,57 +3,58 @@ import researchImage from "../images/research.png";
 import bootcampImage from "../images/Bootcamp.png";
 import cultureImage from "../images/culture.png";
 import robotics from "../images/robotics.png";
+import programming from "../images/download.jpg";
 
 const events = [
   {
-    /*
+    
     id: 1,
     title: "AI Workshop",
     description: "Introduction to Artificial Intelligence",
-    date: "2026-04-10",
+    date: "2026-05-10",
     location: "KU Shadadiya Campus",
     visibility: "ku-only",
     category: "Workshop",
-    seats: 50,*/
+    seats: 60,
   },
   {
     id: 2,
     title: "Cybersecurity Seminar",
     description: "Learn the basics of digital security",
-    date: "2026-04-15",
+    date: "2026-05-15",
     location: "KU Khaldiya Campus",
     visibility: "public",
     category: "Seminar",
     image: cyberImage,
-    seats: 120,
+    seats: 60,
   },
   {
     id: 3,
     title: "Research Expo",
     description: "Student projects and research presentations",
-    date: "2026-04-20",
+    date: "2026-05-20",
     location: "College of Science",
     visibility: "public",
     category: "Research",
     image: researchImage,
-    seats: 200,
+    seats: 100,
   },
   {
     id: 4,
-    title: "Advanced Robotics",
+    title: "Programming Contest",
     description: "A KU-only lab tour and demo",
-    date: "2026-04-25",
+    date: "2026-05-25",
     location: "College of Engineering",
     visibility: "ku-only",
     category: "Academic",
     seats: 35,
-    image: robotics,
+    image: programming,
   },
   {
     id: 5,
     title: "Entrepreneurship Bootcamp",
     description: "Build your startup skills with mentors and workshops",
-    date: "2026-05-05",
+    date: "2026-05-08",
     location: "Business Innovation Hub",
     visibility: "ku-only",
     category: "Workshop",

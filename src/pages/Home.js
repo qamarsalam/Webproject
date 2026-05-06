@@ -1,11 +1,53 @@
-import { useContext, useMemo } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import EventCard from "../components/EventCard";
 import events from "../data/events";
 import { AuthContext } from "../context/AuthContext";
+import { apiRequest } from "../utils/api";
+import cyberImage from "../images/cyber.png";
+import researchImage from "../images/research.png";
+import bootcampImage from "../images/Bootcamp.png";
+import cultureImage from "../images/culture.png";
+import roboticsImage from "../images/robotics.png";
+import campusImage from "../images/download.jpg";
 import heroImage from "../images/KUlogo.png";
 import "../styles/KUEvents.css";
 import "../styles/Home.css";
+
+const staticEventImages = {
+  2: cyberImage,
+  3: bootcampImage,
+  5: researchImage,
+  6: cultureImage,
+  7: campusImage,
+  8: roboticsImage,
+};
+
+function toFrontendVisibility(visibility) {
+  return String(visibility || "").toUpperCase() === "KU_ONLY" ? "ku-only" : "public";
+}
+
+function toDateDisplay(value) {
+  if (!value) return "";
+  return String(value).slice(0, 10);
+}
+
+function mapBackendEvent(event) {
+  return {
+    id: event.id || event.eventID,
+    eventID: event.eventID || event.id,
+    title: event.title,
+    description: event.description,
+    date: toDateDisplay(event.eventDate),
+    location: event.location,
+    visibility: toFrontendVisibility(event.visibility),
+    category: event.category,
+    image: event.posterURL || staticEventImages[event.eventID] || null,
+    seats: event.capacityLimit || 100,
+    registrations: event.registrationCount || event.registrations || 0,
+    isDatabaseEvent: true,
+  };
+}
 
 function getOrganizerPublishedEvents() {
   const savedEvents = JSON.parse(localStorage.getItem("organizerEvents") || "[]");
@@ -29,21 +71,35 @@ function getOrganizerPublishedEvents() {
 
 function Home() {
   const { user } = useContext(AuthContext);
+  const [databaseEvents, setDatabaseEvents] = useState([]);
+
+  useEffect(() => {
+    async function loadEvents() {
+      try {
+        const data = await apiRequest("/events?status=PUBLISHED");
+        setDatabaseEvents(data.events.map(mapBackendEvent));
+      } catch (error) {
+        setDatabaseEvents([]);
+      }
+    }
+
+    loadEvents();
+  }, []);
 
   const visibleEvents = useMemo(() => {
-    const allEvents = [...events, ...getOrganizerPublishedEvents()];
+    const allEvents = databaseEvents.length > 0 ? databaseEvents : [...events, ...getOrganizerPublishedEvents()];
     return allEvents.filter((event) => {
       if (event.visibility === "public") return true;
-      if (event.visibility === "ku-only" && ["student", "organizer"].includes(user?.role)) return true;
+      if (event.visibility === "ku-only" && ["student", "organizer", "admin"].includes(user?.role)) return true;
       return false;
     });
-  }, [user]);
+  }, [user, databaseEvents]);
 
   const categories = [
-    { id: 1, name: "🎓", title: "Academic", count: 12 },
-    { id: 2, name: "🔬", title: "Research", count: 8 },
-    { id: 3, name: "💼", title: "Workshop", count: 15 },
-    { id: 4, name: "🎤", title: "Seminar", count: 10 },
+    { id: 1, name: "🎓", title: "Academic", count: 1 },
+    { id: 2, name: "🔬", title: "Research", count: 1 },
+    { id: 3, name: "💼", title: "Workshop", count: 2 },
+    { id: 4, name: "🎤", title: "Seminar", count: 1 },
   ];
 
   return (

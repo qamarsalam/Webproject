@@ -8,14 +8,18 @@ import researchImage from "../images/research.png";
 import bootcampImage from "../images/Bootcamp.png";
 import cultureImage from "../images/culture.png";
 import roboticsImage from "../images/robotics.png";
+import campusImage from "../images/download.jpg";
+import programmingImage from "../images/programming.png";
 import "../styles/AppPages.css";
 
 const staticEventImages = {
   2: cyberImage,
-  3: researchImage,
-  4: roboticsImage,
-  5: bootcampImage,
+  3: bootcampImage,
+  4: programmingImage,
+  5: researchImage,
   6: cultureImage,
+  7: campusImage,
+  8: roboticsImage,
 };
 
 function toFrontendVisibility(visibility) {
@@ -121,7 +125,7 @@ function Events() {
     return allEvents.filter((event) => {
       const matchesRole =
         event.visibility === "public" ||
-        (event.visibility === "ku-only" && ["student", "organizer"].includes(user?.role));
+        (event.visibility === "ku-only" && ["student", "organizer", "admin"].includes(user?.role));
 
       if (!matchesRole) return false;
 

@@ -33,7 +33,7 @@ function AttendeesIcon() {
 function EventCard({ event }) {
   const visibilityLabel = event.visibility === "ku-only" ? "KU only" : "Public";
   const visibilityBadgeClass = event.visibility === "ku-only" ? "badge-primary" : "badge-gold";
-  const attendingCount = event.attendees ?? event.registrations ?? event.attending ?? 30;
+  const attendingCount = event.attendees ?? event.registrationCount ?? event.registrations ?? event.attending ?? 30;
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);

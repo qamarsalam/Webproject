@@ -9,23 +9,29 @@ import researchImage from "../images/research.png";
 import bootcampImage from "../images/Bootcamp.png";
 import cultureImage from "../images/culture.png";
 import roboticsImage from "../images/robotics.png";
+import campusImage from "../images/download.jpg";
+import programmingImage from "../images/programming.png";
 import "../styles/AppPages.css";
 
 const staticEventImages = {
   2: cyberImage,
-  3: researchImage,
-  4: roboticsImage,
-  5: bootcampImage,
+  3: bootcampImage,
+  4: programmingImage,
+  5: researchImage,
   6: cultureImage,
+  7: campusImage,
+  8: roboticsImage,
 };
 
 const eventDetails = {
   1: "This AI Workshop gives KU students a practical introduction to machine learning models, data preparation, and real-world applications. Participants explore supervised and unsupervised techniques, build simple projects, and learn how AI can support campus research and innovation.",
   2: "The Cybersecurity Seminar covers essential online safety practices, network protection, and threat awareness. Students will learn how to recognize phishing, secure personal devices, and defend critical systems in a university setting.",
-  3: "At the Research Expo, KU student teams showcase innovative projects across science, engineering, and humanities. Visitors can explore new discoveries, speak with researchers, and connect with mentors interested in continuing academic work.",
-  4: "Advanced Robotics offers an exclusive laboratory tour and live demonstrations of autonomous systems. KU students will see cutting-edge robotics research in action and learn how engineering teams bring intelligent machines to life.",
-  5: "The Entrepreneurship Bootcamp helps aspiring founders turn ideas into viable ventures. Participants work with mentors on business models, pitching, and growth strategies while building connections across KU's innovation ecosystem.",
+  3: "The Web Development Bootcamp gives KU students hands-on practice with React components, routing, and API integration. Participants build practical frontend features and connect them with backend services.",
+  4: "The Programming Contest is a team-based academic challenge where KU students solve algorithmic problems, practice coding under time limits, and strengthen problem-solving skills.",
+  5: "The Research Poster Exhibition allows students to present research posters from engineering and science departments. Attendees can explore student work, discuss findings, and connect with faculty mentors.",
   6: "Cultural Day celebrates the rich diversity of Kuwait University with performances, exhibitions, and cultural showcases from students and student organizations around campus.",
+  7: "The Career Readiness Seminar helps students prepare for future opportunities through resume guidance, interview preparation, and professional development advice.",
+  8: "The Robotics Demonstration showcases robotics projects and lab demonstrations, giving students a closer look at practical engineering and automation work.",
 };
 
 function toFrontendVisibility(visibility) {
@@ -84,6 +90,15 @@ function getDescriptionPreview(description) {
   return `${cleanDescription.slice(0, 180).trim()}...`;
 }
 
+function updateRegistrationCount(event, amount) {
+  if (!event) return event;
+
+  return {
+    ...event,
+    registrations: Math.max(0, (event.registrations || 0) + amount),
+  };
+}
+
 function EventDetails() {
   const { user } = useContext(AuthContext);
   const { registerUser, unregisterUser, isUserRegistered, getAvailableSeats } = useContext(RegistrationContext);
@@ -116,7 +131,8 @@ function EventDetails() {
   }, [databaseEvent]);
 
   const event = allEvents.find((item) => String(item.id) === id);
-  const availableSeats = event ? getAvailableSeats(event.id, event.seats) : 0;
+  const backendAvailableSeats = event ? Math.max(0, event.seats - (event.registrations || 0)) : 0;
+  const availableSeats = event ? getAvailableSeats(event.id, backendAvailableSeats) : 0;
   const isRegistered = event && user?.id ? isUserRegistered(event.id, user.id) : false;
   const fullDescription = event ? eventDetails[event.id] || event.description : "";
   const descriptionParagraphs = fullDescription
@@ -146,6 +162,7 @@ function EventDetails() {
           method: "POST",
           body: JSON.stringify({ eventID: event.eventID || event.id }),
         });
+        setDatabaseEvent((currentEvent) => updateRegistrationCount(currentEvent, 1));
       } catch (error) {
         setRegistrationMessage(error.message);
         return;
@@ -173,6 +190,7 @@ function EventDetails() {
         await apiRequest(`/registrations/event/${event.eventID || event.id}/my`, {
           method: "DELETE",
         });
+        setDatabaseEvent((currentEvent) => updateRegistrationCount(currentEvent, -1));
       } catch (error) {
         setRegistrationMessage(error.message);
         return;
@@ -222,7 +240,7 @@ function EventDetails() {
     );
   }
 
-  if (event.visibility === "ku-only" && !["student", "organizer"].includes(user?.role)) {
+  if (event.visibility === "ku-only" && !["student", "organizer", "admin"].includes(user?.role)) {
     return (
       <div className="app-page-shell">
         <div className="container app-page-simple-state">

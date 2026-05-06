@@ -29,8 +29,7 @@ function Register() {
     "College of Law",
     "College of Business",
     "College of Education",
-    "College of Pharmacy",
-    "College of Agriculture",
+    "College of Sharia",
   ];
 
   const validateForm = () => {
