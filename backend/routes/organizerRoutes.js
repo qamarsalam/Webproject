@@ -1,5 +1,6 @@
 const express = require("express");
 const {
+  approveOrganizerRequest,
   getMyOrganizerProfile,
   getOrganizerById,
   getOrganizers,
@@ -10,6 +11,7 @@ const { authenticateToken, authorizeRoles } = require("../middleware/authMiddlew
 const router = express.Router();
 
 router.get("/", authenticateToken, authorizeRoles("ADMIN"), getOrganizers);
+router.post("/approve-request", authenticateToken, authorizeRoles("ADMIN"), approveOrganizerRequest);
 router.get("/me", authenticateToken, authorizeRoles("ORGANIZER", "ADMIN"), getMyOrganizerProfile);
 router.post("/me", authenticateToken, authorizeRoles("ORGANIZER", "ADMIN"), saveMyOrganizerProfile);
 router.get("/:id", getOrganizerById);

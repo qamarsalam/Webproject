@@ -1,4 +1,5 @@
 const Organizer = require("../models/Organizer");
+const User = require("../models/User");
 
 function serializeOrganizer(organizer) {
   return {
@@ -72,6 +73,63 @@ async function saveMyOrganizerProfile(req, res, next) {
   }
 }
 
+async function approveOrganizerRequest(req, res, next) {
+  try {
+    const email = String(req.body.email || req.body.universityEmail || "")
+      .trim()
+      .toLowerCase();
+    const organizationName = req.body.organizationName || req.body.clubDepartment;
+    const description = req.body.description || req.body.eventPurpose;
+
+    if (!email || !organizationName || !description) {
+      return res.status(400).json({
+        message: "Email, organization name, and description are required",
+      });
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "A registered user with this email was not found",
+      });
+    }
+
+    user.role = "ORGANIZER";
+    user.isAuthorized = true;
+    await user.save();
+
+    let organizer = await Organizer.findOne({ userID: user.userID });
+
+    if (organizer) {
+      organizer.organizationName = organizationName;
+      organizer.description = description;
+      await organizer.save();
+    } else {
+      organizer = await Organizer.create({
+        userID: user.userID,
+        organizationName,
+        description,
+      });
+    }
+
+    res.status(200).json({
+      message: "Organizer request approved successfully",
+      organizer: serializeOrganizer(organizer),
+      user: {
+        id: user.userID,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        isAuthorized: user.isAuthorized,
+        isActive: user.isActive,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 async function getOrganizerById(req, res, next) {
   try {
     const organizer = await Organizer.findOne({
@@ -89,6 +147,7 @@ async function getOrganizerById(req, res, next) {
 }
 
 module.exports = {
+  approveOrganizerRequest,
   getOrganizers,
   getMyOrganizerProfile,
   saveMyOrganizerProfile,

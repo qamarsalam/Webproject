@@ -96,11 +96,11 @@ function Home() {
   }, [user, databaseEvents]);
 
   const categories = [
-    { id: 1, name: "🎓", title: "Academic", count: 1 },
-    { id: 2, name: "🔬", title: "Research", count: 1 },
-    { id: 3, name: "💼", title: "Workshop", count: 2 },
-    { id: 4, name: "🎤", title: "Seminar", count: 1 },
-  ];
+  { id: 1, name: "🎓", title: "Academic" },
+  { id: 2, name: "🔬", title: "Research" },
+  { id: 3, name: "💼", title: "Workshop" },
+  { id: 4, name: "🎤", title: "Seminar" },
+];
 
   return (
     <div className="home">

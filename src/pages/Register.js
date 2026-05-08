@@ -169,7 +169,7 @@ function Register() {
                 type="email"
                 name="email"
                 className={`form-input ${errors.email ? "input-error" : ""}`}
-                placeholder="your@example.com"
+                placeholder="your@gmail.com"
                 value={formData.email}
                 onChange={handleChange}
               />

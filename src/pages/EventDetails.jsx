@@ -107,6 +107,7 @@ function EventDetails() {
   const [isLoadingEvent, setIsLoadingEvent] = useState(true);
   const [registrationMessage, setRegistrationMessage] = useState("");
   const [showRegistrationModal, setShowRegistrationModal] = useState(false);
+  const [registeredEventIds, setRegisteredEventIds] = useState([]);
 
   useEffect(() => {
     async function loadEvent() {
@@ -125,6 +126,28 @@ function EventDetails() {
     loadEvent();
   }, [id]);
 
+  useEffect(() => {
+    async function loadMyRegistrations() {
+      if (!user?.id) {
+        setRegisteredEventIds([]);
+        return;
+      }
+
+      try {
+        const data = await apiRequest("/registrations/my");
+        setRegisteredEventIds(
+          data.registrations
+            .filter((registration) => registration.registrationStatus === "REGISTERED")
+            .map((registration) => Number(registration.eventID))
+        );
+      } catch (error) {
+        setRegisteredEventIds([]);
+      }
+    }
+
+    loadMyRegistrations();
+  }, [user?.id]);
+
   const allEvents = useMemo(() => {
     if (databaseEvent) return [databaseEvent];
     return [...events.filter((item) => item.id), ...getOrganizerPublishedEvents()];
@@ -133,7 +156,10 @@ function EventDetails() {
   const event = allEvents.find((item) => String(item.id) === id);
   const backendAvailableSeats = event ? Math.max(0, event.seats - (event.registrations || 0)) : 0;
   const availableSeats = event ? getAvailableSeats(event.id, backendAvailableSeats) : 0;
-  const isRegistered = event && user?.id ? isUserRegistered(event.id, user.id) : false;
+  const isRegistered =
+    event && user?.id
+      ? isUserRegistered(event.id, user.id) || registeredEventIds.includes(Number(event.eventID || event.id))
+      : false;
   const fullDescription = event ? eventDetails[event.id] || event.description : "";
   const descriptionParagraphs = fullDescription
     .split(/\n+/)
@@ -163,6 +189,7 @@ function EventDetails() {
           body: JSON.stringify({ eventID: event.eventID || event.id }),
         });
         setDatabaseEvent((currentEvent) => updateRegistrationCount(currentEvent, 1));
+        setRegisteredEventIds((currentIds) => [...new Set([...currentIds, Number(event.eventID || event.id)])]);
       } catch (error) {
         setRegistrationMessage(error.message);
         return;
@@ -191,6 +218,9 @@ function EventDetails() {
           method: "DELETE",
         });
         setDatabaseEvent((currentEvent) => updateRegistrationCount(currentEvent, -1));
+        setRegisteredEventIds((currentIds) =>
+          currentIds.filter((eventId) => eventId !== Number(event.eventID || event.id))
+        );
       } catch (error) {
         setRegistrationMessage(error.message);
         return;

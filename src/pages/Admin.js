@@ -36,6 +36,23 @@ function Admin() {
     localStorage.setItem("organizerRequests", JSON.stringify(updatedRequests));
   };
 
+  const approveOrganizerRequest = async (request) => {
+    try {
+      await apiRequest("/organizers/approve-request", {
+        method: "POST",
+        body: JSON.stringify({
+          universityEmail: request.universityEmail,
+          clubDepartment: request.clubDepartment,
+          eventPurpose: request.eventPurpose,
+        }),
+      });
+      updateRequestStatus(request.id, "Approved");
+      setMessageLoadError("");
+    } catch (error) {
+      setMessageLoadError(error.message);
+    }
+  };
+
   const filteredRequests = organizerRequests.filter((request) => {
     if (filter === "all") return true;
     return request.status.toLowerCase() === filter;
@@ -232,7 +249,7 @@ function Admin() {
                         <div className="request-actions">
                           <button
                             className="btn btn-success"
-                            onClick={() => updateRequestStatus(request.id, "Approved")}
+                            onClick={() => approveOrganizerRequest(request)}
                           >
                             Approve
                           </button>
